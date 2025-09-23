@@ -1,0 +1,77 @@
+version: '3'
+
+silent: true
+
+dotenv: ['.env']
+
+tasks:
+  init:
+    desc: Инициализация приложения
+    cmds:
+      - task: copy-env-backend-file
+      - task: copy-env-root-file
+      - task: build
+      - task: up
+      - task: composer:install
+      - docker compose exec backend php artisan key:generate
+      - task: migrate
+
+  build:
+    desc: Сборка приложения
+    cmd: docker compose build --build-arg UID=${BUILD_ARG_UID:-$(id -u)} --build-arg GID=${BUILD_ARG_GID:-$(id -g)}
+
+  shell:
+    desc: Запуск терминала
+    cmds:
+      - task: up
+      - docker compose exec backend sh
+
+  up:
+    desc: Запуск приложения
+    cmd: docker compose up -d
+    status:
+      - docker compose exec backend echo "test"
+
+  down:
+    desc: Остановка приложения
+    cmd: docker compose down --remove-orphans
+
+  composer:install:
+    desc: Запуск composer install
+    cmds:
+      - task: up
+      - docker compose exec backend composer install
+
+  composer:update:
+    desc: Запуск composer update
+    cmds:
+      - task: up
+      - docker compose exec backend composer update
+
+  composer:require:
+    desc: composer require
+    cmd: docker compose exec backend composer require {{.CLI_ARGS}}
+
+  copy-env-backend-file:
+    internal: true
+    cmd: cp ./backend/.env.example ./backend/.env
+    status:
+      - test -f ./.env
+
+  copy-env-root-file:
+    internal: true
+    cmd: cp .env.example .env
+    status:
+      - test -f .env
+
+  migrate:
+    desc: Запуск миграций
+    cmds:
+      - task: up
+      - docker compose exec backend php artisan migrate --seed
+
+  test:
+    desc: Запуск тестов
+    cmds:
+      - task: up
+      - docker compose exec backend php artisan test {{.CLI_ARGS}}
