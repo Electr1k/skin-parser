@@ -24,4 +24,10 @@ class SearchSettings extends Model
     protected $keyType = 'string';
     protected $guarded = false;
 
+    protected $casts = [
+        'extremum' => Extremum::class,
+        'float_limit' => 'float',
+        'max_price' => 'float',
+    ];
+
 }

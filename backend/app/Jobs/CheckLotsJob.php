@@ -16,19 +16,15 @@ class CheckLotsJob implements ShouldQueue, ShouldBeUniqueUntilProcessing
     use Queueable;
     use SerializesModels;
 
-    /**
-     * Create a new job instance.
-     */
     public function __construct(protected SearchSettings $searchSettings) {}
+
 
     public function uniqueId(): string
     {
-        return $this->skin->id;
+        return $this->searchSettings->id;
     }
 
-    /**
-     * Execute the job.
-     */
+
     public function handle(Handler $handler): void
     {
         $handler->handle($this->searchSettings);
