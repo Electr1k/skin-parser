@@ -6,15 +6,13 @@ use App\Models\SkinSettings;
 use App\UseCases\CheckLots\Handler;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Bus\Queueable;
+use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 class CheckLotsJob implements ShouldQueue, ShouldBeUniqueUntilProcessing
 {
-    use Dispatchable;
-    use Queueable;
-    use SerializesModels;
+    use Dispatchable, Queueable, SerializesModels;
 
     public function __construct(protected SkinSettings $searchSettings) {}
 

@@ -65,6 +65,7 @@ class Handler
                     $skin->extremum === Extremum::MAX && $lot['floatvalue'] > $skin->float_limit)
                 ) {
                     dump('Найден предмет: float - ' . $lot['floatvalue'] . ' Price - ' . $lot['price'] . ' Page - ' . (intdiv($offset, $this->batchSize) + 1));
+                    Log::warning('Найден предмет: float - ' . $lot['floatvalue'] . ' Price - ' . $lot['price'] . ' Page - ' . (intdiv($offset, $this->batchSize) + 1));
                     // TODO: notification about find
                 }
             }
