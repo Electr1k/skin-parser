@@ -3,6 +3,7 @@
 namespace App\UseCases\CheckLots;
 
 use App\Enums\Extremum;
+use App\Events\LotIsRare;
 use App\Models\SkinSettings;
 use App\Services\CSFloatHTTPClient;
 use App\Services\HTMLParserService;
@@ -58,15 +59,14 @@ class Handler
                     }
                 }
 
-                $this->lotService->createOrUpdateLot($lot, $skin, $offset, $this->batchSize);
+                $lot = $this->lotService->createOrUpdateLot($lot, $skin, $offset, $this->batchSize);
 
-                if (isset($lot['floatvalue']) && (
-                    $skin->extremum === Extremum::MIN && $lot['floatvalue'] < $skin->float_limit ||
-                    $skin->extremum === Extremum::MAX && $lot['floatvalue'] > $skin->float_limit)
+                if ($lot->float && (
+                    $skin->extremum === Extremum::MIN && $lot->float < $skin->float_limit ||
+                    $skin->extremum === Extremum::MAX && $lot->float > $skin->float_limit)
                 ) {
-                    dump('Найден предмет: float - ' . $lot['floatvalue'] . ' Price - ' . $lot['price'] . ' Page - ' . (intdiv($offset, $this->batchSize) + 1));
-                    Log::warning('Найден предмет: float - ' . $lot['floatvalue'] . ' Price - ' . $lot['price'] . ' Page - ' . (intdiv($offset, $this->batchSize) + 1));
-                    // TODO: notification about find
+                    Log::warning('Найден предмет: float - ' . $lot->float . ' Price - ' . $lot->price . ' Page - ' . (intdiv($offset, $this->batchSize) + 1));
+                    event(new LotIsRare($lot));
                 }
             }
             $offset += $this->batchSize;
