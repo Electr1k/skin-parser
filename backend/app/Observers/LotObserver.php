@@ -3,15 +3,17 @@
 namespace App\Observers;
 
 use App\Models\Lot;
-use Illuminate\Support\Facades\Log;
+use App\Models\LotHistory;
 
 class LotObserver
 {
 
     public function updating(Lot $lot): void
     {
-        $original = json_encode($lot->getOriginal());
-        $dirty = json_encode($lot->getDirty());
-        Log::info("Было: $original\nстало: $dirty");
+        LotHistory::query()->create([
+            'lot_id' => $lot->a,
+            'before' => $lot->getOriginal(),
+            'changes' => $lot->getDirty(),
+        ]);
     }
 }

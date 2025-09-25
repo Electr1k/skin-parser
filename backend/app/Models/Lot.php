@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 
 /**
  * Лот скина в стиме
@@ -20,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $inspect_link - Ссылка на осмотр
  *
  * @property SkinSettings $skinSettings
+ * @property Collection<LotHistory> $lotHistory
  */
 class Lot extends Model
 {
@@ -35,5 +38,10 @@ class Lot extends Model
     public function skinSettings(): BelongsTo
     {
         return $this->belongsTo(SkinSettings::class, 'skin_id');
+    }
+
+    public function history(): HasMany
+    {
+        return $this->hasMany(LotHistory::class, 'lot_id', 'a');
     }
 }
