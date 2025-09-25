@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Enums\Extremum;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 
 
 /**
@@ -17,9 +19,12 @@ use Illuminate\Database\Eloquent\Model;
  * @property float $float_limit - Пороговое значение float
  * @property float $max_price - Максимальная цена для поиска
  * @property bool $is_active - Активен ли поиск
+ *
+ * @property Collection<Lot> $lots
  */
-class SearchSettings extends Model
+class SkinSettings extends Model
 {
+    protected $table = 'skin_settings';
     public $incrementing = false;
     protected $keyType = 'string';
     protected $guarded = false;
@@ -30,4 +35,8 @@ class SearchSettings extends Model
         'max_price' => 'float',
     ];
 
+    public function lots(): HasMany
+    {
+        return $this->hasMany(Lot::class, 'skin_id');
+    }
 }

@@ -7,12 +7,14 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    private const string TABLE_NAME = 'skin_settings';
+
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::create('search_settings', function (Blueprint $table) {
+        Schema::create(self::TABLE_NAME, function (Blueprint $table) {
             $table->comment('Таблица с параметрами скинов для поиска');
 
             $table->string('id')
@@ -59,6 +61,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ыл_search_settings');
+        Schema::dropIfExists(self::TABLE_NAME);
     }
 };

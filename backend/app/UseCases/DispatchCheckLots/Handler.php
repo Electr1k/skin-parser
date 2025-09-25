@@ -3,13 +3,13 @@
 namespace App\UseCases\DispatchCheckLots;
 
 use App\Jobs\CheckLotsJob;
-use App\Models\SearchSettings;
+use App\Models\SkinSettings;
 
 class Handler
 {
     public function handle(): void
     {
-        $skinsForCheck = SearchSettings::query()
+        $skinsForCheck = SkinSettings::query()
             ->where('is_active', true)
             ->get();
 

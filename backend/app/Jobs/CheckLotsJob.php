@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Models\SearchSettings;
+use App\Models\SkinSettings;
 use App\UseCases\CheckLots\Handler;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -16,7 +16,7 @@ class CheckLotsJob implements ShouldQueue, ShouldBeUniqueUntilProcessing
     use Queueable;
     use SerializesModels;
 
-    public function __construct(protected SearchSettings $searchSettings) {}
+    public function __construct(protected SkinSettings $searchSettings) {}
 
 
     public function uniqueId(): string
