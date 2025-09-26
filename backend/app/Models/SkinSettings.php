@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Builders\HasCustomBuilder;
+use App\Builders\SkinSettingsBuilder;
 use App\Enums\Extremum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -21,9 +23,13 @@ use Illuminate\Support\Collection;
  * @property bool $is_active - Активен ли поиск
  *
  * @property Collection<Lot> $lots
+ * @method static SkinSettingsBuilder query()
  */
 class SkinSettings extends Model
 {
+
+    use HasCustomBuilder;
+
     protected $table = 'skin_settings';
     public $incrementing = false;
     protected $keyType = 'string';

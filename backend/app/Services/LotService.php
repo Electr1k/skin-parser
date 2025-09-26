@@ -4,9 +4,13 @@ namespace App\Services;
 
 use App\Models\Lot;
 use App\Models\SkinSettings;
+use App\Repository\LotRepository;
 
-class LotService
+readonly class LotService
 {
+
+    public function __construct(private LotRepository $lotRepository){}
+
 
     /**
      * Возвращает идентификтаоры лотов, которых нет в БД
@@ -14,7 +18,7 @@ class LotService
     public function filterNotExistLots(array $lots): array
     {
         $lotsCollection = collect($lots)->pluck('a');
-        $lotsInDb = Lot::query()->whereIn('a', $lotsCollection)->pluck('a');
+        $lotsInDb = $this->lotRepository->getIdsNotExist($lotsCollection);
         return $lotsCollection->diff($lotsInDb)->toArray();
     }
 

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Builders\HasCustomBuilder;
+use App\Builders\LotBuilder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -23,9 +25,12 @@ use Illuminate\Support\Collection;
  *
  * @property SkinSettings $skinSettings
  * @property Collection<LotHistory> $lotHistory
+ * @method static LotBuilder query()
  */
 class Lot extends Model
 {
+    use HasCustomBuilder;
+
     protected $primaryKey = 'a';
     public $incrementing = false;
     protected $guarded = [];
