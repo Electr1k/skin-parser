@@ -15,6 +15,7 @@ class SteamHTTPClient
 
     protected const string URI_MARKET_LISTING_720 = '/market/listings/730/';
 
+    protected const string URI_MARKET_SEARCH_SUGGESTIONS_RESULTS = '/market/searchsuggestionsresults';
 
     public function __construct()
     {
@@ -118,6 +119,19 @@ class SteamHTTPClient
                 'language' => $language,
                 'currency' => $currency,
             ],
+            proxy: $proxy
+        );
+    }
+
+    public function getSkins(
+        string $name,
+        ?string $proxy = null,
+    ): array
+    {
+        return $this->makeRequest(
+            method: 'GET',
+            uri: self::URI_MARKET_SEARCH_SUGGESTIONS_RESULTS,
+            queryParameters: ['q' => $name],
             proxy: $proxy
         );
     }
