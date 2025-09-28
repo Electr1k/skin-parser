@@ -5,11 +5,14 @@ namespace App\UseCases\DispatchCheckLots;
 use App\Jobs\CheckLotsJob;
 use App\Repository\Interfaces\SkinSettingsInterface;
 
-class Handler
+readonly class Handler
 {
-    public function handle(SkinSettingsInterface $skinSettings): void
+
+    public function __construct(private SkinSettingsInterface $skinSettings){}
+
+    public function handle(): void
     {
-        $skinsForCheck = $skinSettings->getActive();
+        $skinsForCheck = $this->skinSettings->getActive();
 
         foreach ($skinsForCheck as $skin) {
             CheckLotsJob::dispatch($skin);

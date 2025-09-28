@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\SkinSettings;
+use App\UseCases\CheckLots\DataInput;
 use App\UseCases\CheckLots\Handler;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -25,6 +26,6 @@ class CheckLotsJob implements ShouldQueue, ShouldBeUniqueUntilProcessing
 
     public function handle(Handler $handler): void
     {
-        $handler->handle($this->searchSettings);
+        $handler->handle(new DataInput($this->searchSettings));
     }
 }

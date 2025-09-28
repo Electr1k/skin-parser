@@ -2,12 +2,12 @@
 
 namespace App\UseCases\CheckLots;
 
+use App\DTO\Lot\LotStoreDTO;
 use App\Enums\Extremum;
 use App\Events\LotIsRare;
-use App\Models\SkinSettings;
 use App\Services\CSFloatHTTPClient;
 use App\Services\HTMLParserService;
-use App\Services\LotService;
+use App\Services\Lot\LotService;
 use App\Services\SteamHTTPClient;
 use Illuminate\Support\Facades\Log;
 
@@ -28,13 +28,13 @@ class Handler
     }
 
 
-    public function handle(SkinSettings $skin): void
+    public function handle(DataInput $data): void
     {
         $totalCount = $offset = 0;
 
         do{
             $response = $this->steamHTTPClient->getSkinLots(
-                $skin->id,
+                $data->skin->id,
                 $offset,
                 $this->batchSize,
                 $this->proxy
@@ -46,7 +46,7 @@ class Handler
             $lotIdsForCheck = $this->lotService->filterNotExistLots($lots);
 
             foreach ($lots as $lot) {
-                if ($lot['price'] > $skin->max_price) break(2);
+                if ($lot['price'] > $data->skin->max_price) break(2);
 
                 if (in_array($lot['a'], $lotIdsForCheck)) {
                     try {
@@ -59,13 +59,18 @@ class Handler
                     }
                 }
 
-                $lot = $this->lotService->createOrUpdateLot($lot, $skin, $offset, $this->batchSize);
+                $lot = $this->lotService->createOrUpdateLot(
+                    LotStoreDTO::from([
+                        ...$lot,
+                        'skin_id' => $data->skin->id,
+                        'page' => intdiv($offset, $this->batchSize) + 1,
+                    ])
+                );
 
                 if ($lot->float && (
-                    $skin->extremum === Extremum::MIN && $lot->float < $skin->float_limit ||
-                    $skin->extremum === Extremum::MAX && $lot->float > $skin->float_limit)
+                    $data->skin->extremum === Extremum::MIN && $lot->float < $data->skin->float_limit ||
+                    $data->skin->extremum === Extremum::MAX && $lot->float > $data->skin->float_limit)
                 ) {
-                    Log::warning('Найден предмет: float - ' . $lot->float . ' Price - ' . $lot->price . ' Page - ' . (intdiv($offset, $this->batchSize) + 1));
                     event(new LotIsRare($lot));
                 }
             }

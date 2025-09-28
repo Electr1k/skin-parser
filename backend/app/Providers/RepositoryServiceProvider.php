@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Repository\Interfaces\LotInterface;
 use App\Repository\Interfaces\SkinSettingsInterface;
+use App\Repository\LotRepository;
 use App\Repository\SkinSettingsRepository;
 use Illuminate\Support\ServiceProvider;
 
@@ -22,5 +24,6 @@ class RepositoryServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->app->bind(SkinSettingsInterface::class, SkinSettingsRepository::class);
+        $this->app->bind(LotInterface::class, LotRepository::class);
     }
 }
