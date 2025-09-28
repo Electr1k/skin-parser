@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Builders;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -9,7 +9,7 @@ trait HasCustomBuilder
 {
     public function newEloquentBuilder($query): Builder
     {
-        /** @var Builder<Model> */
-        return new (str_replace('Models', 'Builders', static::class).'Builder')($query);
+        $modelName = class_basename(static::class);
+        return new (str_replace('Models', 'Builders\\'.$modelName, static::class).'Builder')($query);
     }
 }

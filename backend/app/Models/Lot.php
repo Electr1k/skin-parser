@@ -2,8 +2,7 @@
 
 namespace App\Models;
 
-use App\Builders\HasCustomBuilder;
-use App\Builders\LotBuilder;
+use App\Builders\Lot\LotBuilder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;

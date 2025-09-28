@@ -2,8 +2,7 @@
 
 namespace App\Models;
 
-use App\Builders\HasCustomBuilder;
-use App\Builders\SkinSettingsBuilder;
+use App\Builders\SkinSettings\SkinSettingsBuilder;
 use App\Enums\Extremum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;

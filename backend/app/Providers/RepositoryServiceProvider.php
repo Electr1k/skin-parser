@@ -4,8 +4,8 @@ namespace App\Providers;
 
 use App\Repository\Interfaces\LotInterface;
 use App\Repository\Interfaces\SkinSettingsInterface;
-use App\Repository\LotRepository;
-use App\Repository\SkinSettingsRepository;
+use App\Repository\LotRepository\LotRepository;
+use App\Repository\SkinSettings\SkinSettingsRepository;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider

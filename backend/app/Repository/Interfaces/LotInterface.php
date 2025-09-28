@@ -6,5 +6,5 @@ use Illuminate\Support\Collection;
 
 interface LotInterface
 {
-    public function getIdsNotExist(iterable $lotsCollection): Collection;
+    public function getIdsWithFloat(iterable $lotsCollection): Collection;
 }

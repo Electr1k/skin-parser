@@ -10,4 +10,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class BaseBuilder extends Builder
 {
+    public function whereILikeTrim(string $column, string $value): static
+    {
+        return $this->whereRaw("$column ILIKE '%' || TRIM('$value') || '%'");
+    }
 }

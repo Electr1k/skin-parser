@@ -19,7 +19,7 @@ readonly class LotService
     public function filterNotExistLots(array $lots): array
     {
         $lotsCollection = collect($lots)->pluck('a');
-        $lotsInDb = $this->lotRepository->getIdsNotExist($lotsCollection);
+        $lotsInDb = $this->lotRepository->getIdsWithFloat($lotsCollection);
         return $lotsCollection->diff($lotsInDb)->toArray();
     }
 
