@@ -15,7 +15,8 @@ class SkinSettingsResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->market_name,
+            'market_hash_name' => $this->market_hash_name,
+            'market_name' => $this->market_name,
             'icon' => $this->icon,
             'extremum' => $this->extremum->value,
             'float_limit' => $this->float_limit,

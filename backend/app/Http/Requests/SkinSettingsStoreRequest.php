@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use App\Enums\Extremum;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class SkinSettingsStoreRequest extends ApiRequest
