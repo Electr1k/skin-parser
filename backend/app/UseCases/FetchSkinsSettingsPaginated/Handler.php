@@ -1,6 +1,6 @@
 <?php
 
-namespace App\UseCases\FetchSkinSettingsPaginated;
+namespace App\UseCases\FetchSkinsSettingsPaginated;
 
 use App\Repository\Interfaces\SkinSettingsInterface;
 use App\Repository\SkinSettings\DTOs\PaginateDTO;

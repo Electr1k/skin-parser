@@ -1,6 +1,6 @@
 <?php
 
-namespace App\UseCases\FetchSkinSettings;
+namespace App\UseCases\FetchSkinsSettings;
 
 use App\Repository\Interfaces\SkinSettingsInterface;
 use App\Repository\SkinSettings\DTOs\AllDTO;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\UseCases\FetchSkinSettings;
+namespace App\UseCases\FetchSkinsSettings;
 
 use Spatie\LaravelData\Attributes\MapName;
 use Spatie\LaravelData\Data;

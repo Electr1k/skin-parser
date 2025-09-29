@@ -5,15 +5,22 @@ namespace App\Http\Controllers;
 use App\Http\Requests\FindSkinsRequest;
 use App\Http\Requests\SkinSettingsIndexRequest;
 use App\Http\Requests\SkinSettingsListRequest;
+use App\Http\Requests\SkinSettingsStoreRequest;
+use App\Http\Requests\SkinSettingsUpdateRequest;
 use App\Http\Resources\SkinSettingsResource;
 use App\Http\Resources\SkinResource;
+use App\Models\SkinSettings;
 use App\Repository\SkinSettings\SkinSettingsRepository;
-use App\UseCases\FetchSkinSettingsPaginated\DataInput as PaginatedDataInput;
-use App\UseCases\FetchSkinSettingsPaginated\Handler as PaginatedHandler;
+use App\UseCases\FetchSkinsSettingsPaginated\DataInput as PaginatedDataInput;
+use App\UseCases\FetchSkinsSettingsPaginated\Handler as PaginatedHandler;
 use App\UseCases\FindSkins\DataInput as FindSkinsDataInput;
 use App\UseCases\FindSkins\Handler as FindSkinsHandler;
-use App\UseCases\FetchSkinSettings\DataInput as ListDataInput;
-use App\UseCases\FetchSkinSettings\Handler as ListHandler;
+use App\UseCases\FetchSkinsSettings\DataInput as ListDataInput;
+use App\UseCases\FetchSkinsSettings\Handler as ListHandler;
+use App\UseCases\StoreSkinSettings\DataInput as StoreDataInput;
+use App\UseCases\StoreSkinSettings\Handler as StoreHandler;
+use App\UseCases\UpdateSkinSettings\DataInput as UpdateDataInput;
+use App\UseCases\UpdateSkinSettings\Handler as UpdateHandler;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
@@ -43,5 +50,18 @@ class SkinSettingsController extends Controller
         catch (\Exception $exception){
             return response()->json(['error' => $exception->getMessage()], 500);
         }
+    }
+
+    public function store(StoreHandler $handler, SkinSettingsStoreRequest $request): SkinSettingsResource
+    {
+        $skinSetting = $handler->handle(StoreDataInput::from($request->validated()));
+
+        return new SkinSettingsResource($skinSetting);
+    }
+
+    public function update(SkinSettings $settings, UpdateHandler $handler, SkinSettingsUpdateRequest $request): SkinSettingsResource
+    {
+        $handler = $handler->handle(UpdateDataInput::from([...$settings->toArray(), ...$request->validated()]));
+        return new SkinSettingsResource($settings->fresh());
     }
 }
