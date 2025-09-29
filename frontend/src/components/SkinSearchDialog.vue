@@ -1,7 +1,10 @@
 <template>
   <v-dialog v-model="dialog" max-width="700px" hide-overlay>
     <v-card class="pa-4 dialog-card">
-      <v-card-title class="headline mb-3">Редактирование предмета</v-card-title>
+      <!-- Заголовок зависит от режима -->
+      <v-card-title class="headline mb-3">
+        {{ mode === 'create' ? 'Создание предмета' : 'Обновление предмета' }}
+      </v-card-title>
 
       <v-card-text>
         <v-row dense>
@@ -67,7 +70,8 @@
                 label="ID"
                 v-model="editedItem.id"
                 dense
-                :rules="[v => !!v || 'Поле обязательно']"
+                :rules="[v => mode === 'update' ? v => !!v || 'Поле обязательно' : () => true]"
+                :disabled="mode === 'create'"
             ></v-text-field>
           </v-col>
           <v-col cols="12" class="mb-2">
@@ -83,7 +87,9 @@
 
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="primary" @click="$emit('save', editedItem)">Сохранить</v-btn>
+        <v-btn :color="mode === 'create' ? 'primary' : 'success'" @click="submit">
+          {{ mode === 'create' ? 'Сохранить' : 'Обновить' }}
+        </v-btn>
         <v-btn text @click="$emit('close')">Отмена</v-btn>
       </v-card-actions>
     </v-card>
@@ -94,49 +100,36 @@
 export default {
   name: 'ItemDialog',
   props: {
-    value: { // двусторонняя привязка видимости
-      type: Boolean,
-      default: false
-    },
-    item: {
-      type: Object,
-      default: () => ({})
-    }
+    value: {type: Boolean, default: false},
+    item: {type: Object, default: () => ({})},
+    mode: {type: String, default: 'update'}
   },
   data() {
     return {
       dialog: this.value,
-      editedItem: { ...this.item }
+      editedItem: {...this.item}
     }
   },
   watch: {
     value(newVal) {
       this.dialog = newVal;
-      if (newVal) this.editedItem = { ...this.item };
+      if (newVal) this.editedItem = {...this.item};
     },
     dialog(newVal) {
       this.$emit('input', newVal)
     },
     item(newVal) {
-      this.editedItem = { ...newVal }
+      this.editedItem = {...newVal}
+    },
+    mode() {
+      if (this.dialog) this.editedItem = {...this.item};
+    }
+  },
+  methods: {
+    submit() {
+      this.$emit(this.mode === 'create' ? 'create' : 'update', this.editedItem)
+      this.dialog = false
     }
   }
 }
 </script>
-
-<style scoped>
-.dialog-card {
-  border-radius: 16px;
-  background-color: rgba(245, 249, 252, 0.95);
-}
-
-.icon-background {
-  width: 110px;
-  height: 110px;
-  background-color: #e3f2fd;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding-left: 5px;
-}
-</style>
