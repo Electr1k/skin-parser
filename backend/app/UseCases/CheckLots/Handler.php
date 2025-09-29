@@ -77,7 +77,7 @@ class Handler
             $offset += $this->batchSize;
 
             // TODO: Подумать над Rate limit
-            sleep(5);
+            sleep(15);
         }while ($offset < $totalCount);
     }
 }

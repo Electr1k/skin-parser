@@ -76,6 +76,7 @@ class SteamHTTPClient
 
         $response = Http::baseUrl($this->host)
             ->timeout($this->timeout)
+            ->connectTimeout($this->timeout)
             ->withOptions($options)
             ->withQueryParameters($queryParameters)
             ->withHeaders($headers)
