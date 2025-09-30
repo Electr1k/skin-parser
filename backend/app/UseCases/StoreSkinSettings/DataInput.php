@@ -11,7 +11,6 @@ use Spatie\LaravelData\Mappers\SnakeCaseMapper;
 class DataInput extends Data
 {
     public function __construct(
-        public readonly string $id,
         public readonly string $market_hash_name,
         public readonly string $market_name,
         public readonly string $icon,

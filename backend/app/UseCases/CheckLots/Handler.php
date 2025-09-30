@@ -67,7 +67,7 @@ class Handler
                     ])
                 );
 
-                if ($lot->float && (
+                if (in_array($lot->a, $lotIdsForCheck) && $lot->float && (
                     $data->skin->extremum === Extremum::MIN && $lot->float < $data->skin->float_limit ||
                     $data->skin->extremum === Extremum::MAX && $lot->float > $data->skin->float_limit)
                 ) {

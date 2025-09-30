@@ -18,7 +18,13 @@ class BaseApi {
     return await axios.get(this.url.index(), params)
   }
 
+  async update(id, data){
+    return await axios.put(this.url.update(id), data)
+  }
 
+  async store(data){
+    return await axios.post(this.url.store(), data)
+  }
 }
 
 export default BaseApi

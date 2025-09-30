@@ -53,36 +53,49 @@ export default {
     };
   },
   async created() {
-    try {
-      const response = await $api.skinSearch.index();
-      if (response.data?.data) {
-        this.skinSettings = response.data.data;
-      }
-    } catch (e) {
-      this.$toast.error(e.message);
-    }
+    await this.getSkinSettings()
   },
   methods: {
+    async getSkinSettings(){
+      try {
+        const response = await $api.skinSearch.index();
+        if (response.data?.data) {
+          this.skinSettings = response.data.data;
+        }
+      } catch (e) {
+        this.$toast.error(e.message);
+      }
+    },
     openDialog(item) {
       this.editedItem = { ...item };
       this.dialogMode = 'update';
       this.dialog = true;
     },
-    updateItem(updatedItem) {
-      const index = this.skinSettings.findIndex(i => i.id === updatedItem.id);
-      if (index !== -1) this.skinSettings.splice(index, 1, updatedItem);
+    async updateItem(updatedItem) {
+      try {
+        await $api.skinSearch.update(updatedItem.id, updatedItem)
+      }
+      catch (exception){
+        this.$toast.error(exception.message);
+      }
+      await this.getSkinSettings()
     },
-    createItem(newItem) {
-      this.skinSettings.unshift({ ...newItem, id: Date.now().toString() });
+    async createItem(newItem) {
+      try {
+        await $api.skinSearch.store(newItem)
+      }
+      catch (exception){
+        this.$toast.error(exception.message);
+      }
+      await this.getSkinSettings()
     },
-
     async handleAddClick(query) {
       try {
         const response = await $api.skinSearch.findSkins(query);
           this.skins = response.data.data
           this.showDropdown = true;
       } catch (error) {
-        console.error('Ошибка загрузки предметов:', error);
+        this.$toast.error(error.message);
         this.skins = [];
         this.showDropdown = false;
       }
@@ -90,7 +103,6 @@ export default {
 
     handleItemSelected(item) {
       this.editedItem = {
-        id: null,
         market_name: item.market_name,
         market_hash_name: item.market_hash_name,
         icon: item.icon_url,
