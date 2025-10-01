@@ -35,7 +35,7 @@
 <script>
 import {$api} from "@/api";
 import SearchBar from "@/components/SearchBar.vue";
-import ItemCard from "@/components/SkinSearchItem.vue";
+import ItemCard from "@/components/SkinSearchCard.vue";
 import ItemDialog from "@/components/SkinSearchDialog.vue";
 
 export default {
