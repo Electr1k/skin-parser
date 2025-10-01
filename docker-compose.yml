@@ -43,6 +43,7 @@ services:
         container_name: skin-parser-frontend
         volumes:
             - ./frontend:/app
+            - /app/node_modules
         command: npm run serve
         ports:
             - "8080"
