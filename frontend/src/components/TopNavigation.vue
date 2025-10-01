@@ -90,7 +90,7 @@ export default {
       image: '', // Заглушка для аватара
       tabs: [
         { icon: "mdi-home", text: "Главная", route: "dashboard" },
-        { icon: "mdi-magnify", text: "Поиск скинов", route: "main" },
+        { icon: "mdi-magnify", text: "Поиск скинов", route: "skin-search" },
         { icon: "mdi-checkbox-multiple-marked", text: "Найденные скины", route: "found-skins" },
         { icon: "mdi-cog", text: "Настройки", route: "settings" }
       ]

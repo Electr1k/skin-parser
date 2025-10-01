@@ -6,13 +6,13 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    name: 'main',
-    component: () => import('../pages/SkinSearch.vue')
-  },
-  {
-    path: '/dashboard',
     name: 'dashboard',
     component: () => import('./../pages/Dashboard.vue') // Создайте этот файл
+  },
+  {
+    path: '/skin-search',
+    name: 'skin-search',
+    component: () => import('../pages/SkinSearch.vue')
   },
   {
     path: '/found-skins',
