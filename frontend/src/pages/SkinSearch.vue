@@ -39,7 +39,7 @@ import ItemCard from "@/components/SkinSearchItem.vue";
 import ItemDialog from "@/components/SkinSearchDialog.vue";
 
 export default {
-  name: "MainView",
+  name: "SkinSearch",
   components: { SearchBar, ItemCard, ItemDialog },
   data() {
     return {
