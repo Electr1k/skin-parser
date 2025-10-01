@@ -44,7 +44,6 @@ services:
         volumes:
             - ./frontend:/app
             - /app/node_modules
-        command: npm run serve
         ports:
             - "8080"
         depends_on:

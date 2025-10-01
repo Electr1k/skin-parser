@@ -9,6 +9,7 @@ tasks:
     desc: Инициализация приложения
     cmds:
       - task: copy-env-backend-file
+      - task: copy-env-frontend-file
       - task: copy-env-root-file
       - task: build
       - task: up
@@ -53,13 +54,19 @@ tasks:
     cmd: docker compose exec backend composer require {{.CLI_ARGS}}
 
   copy-env-backend-file:
-    internal: true
+    internal: false
     cmd: cp ./backend/.env.example ./backend/.env
     status:
       - test -f ./.env
 
+  copy-env-frontend-file:
+    internal: false
+    cmd: cp ./frontend/.env.example ./frontend/.env
+    status:
+      - test -f ./.env
+
   copy-env-root-file:
-    internal: true
+    internal: false
     cmd: cp .env.example .env
     status:
       - test -f .env
