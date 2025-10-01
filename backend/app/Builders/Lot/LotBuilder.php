@@ -17,4 +17,8 @@ class LotBuilder extends BaseBuilder
         return $this->whereNotNull('float');
     }
 
+    public function whereSkinId(string $skinId): self
+    {
+        return $this->where('skin_id', $skinId);
+    }
 }
