@@ -38,7 +38,7 @@ class LotRepository implements LotInterface
             ]);
 
         $dto->skinId && $query->whereSkinId($dto->skinId);
-        $dto->sortBy && $query->orderBy($dto->sortBy->value, $dto->sortBy === LotsSortable::DATE ? 'desc' : 'asc');
+        $dto->sortBy !== LotsSortable::DATE ? $query->orderBy($dto->sortBy->value) : $query->orderByDesc('lots.created_at');
         $dto->isRare && $query->whereRaw("$isRareSql");
 
         return $query->paginate(perPage: $dto->perPage, page: $dto->page);

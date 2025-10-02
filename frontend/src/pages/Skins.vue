@@ -25,7 +25,7 @@
             <label class="radio-label">
               <input
                   type="radio"
-                  v-model="filters.rareOnly"
+                  v-model="filters.is_rare"
                   :value="false"
                   class="radio-input"
               >
@@ -35,7 +35,7 @@
             <label class="radio-label">
               <input
                   type="radio"
-                  v-model="filters.rareOnly"
+                  v-model="filters.is_rare"
                   :value="true"
                   class="radio-input"
               >
@@ -48,7 +48,7 @@
         <!-- Фильтр по предмету -->
         <div class="filter-group">
           <label class="filter-label">Предмет</label>
-          <select v-model="filters.itemId" class="select-field">
+          <select v-model="filters.skin_id" class="select-field">
             <option value="">Все предметы</option>
             <option
                 v-for="item in availableItems"
@@ -128,6 +128,8 @@
 <script>
 import SkinCard from '@/components/SkinCard.vue'
 import SkinDialog from '@/components/SkinDialog.vue'
+import {$api} from "@/api";
+import {filter} from "core-js/internals/array-iteration";
 
 export default {
   name: 'FoundSkinsPage',
@@ -148,8 +150,8 @@ export default {
       showDetailsDialog: false,
 
       filters: {
-        rareOnly: false,
-        itemId: ''
+        is_rare: false,
+        skin_id: undefined
       },
 
       sortBy: 'date',
@@ -162,52 +164,6 @@ export default {
         { id: 4, market_name: 'Glock-18 | Water Elemental' },
         { id: 5, market_name: 'Desert Eagle | Blaze' }
       ],
-
-      // Обновленная заглушка с стикерами
-      demoData: [
-        {
-          id: 1,
-          market_name: 'AK-47 | Redline (Field-Tested)',
-          icon_url: 'https://steamcommunity-a.akamaihd.net/economy/image/class/730/496409995/200fx125f',
-          float_value: 0.1532156342123,
-          price: 1543,
-          found_date: '2024-01-15T14:30:00Z',
-          is_rare: false,
-          stickers: [
-            { id: 1, name: 'Sticker 1', icon_url: 'https://steamcommunity-a.akamaihd.net/economy/image/class/730/496409995/200fx125f', price: 50 },
-            { id: 2, name: 'Sticker 2', icon_url: 'https://steamcommunity-a.akamaihd.net/economy/image/class/730/496409995/200fx125f', price: 75 }
-          ]
-        },
-        {
-          id: 2,
-          market_name: 'AWP | Dragon Lore (Factory New)',
-          icon_url: 'https://steamcommunity-a.akamaihd.net/economy/image/class/730/496409995/200fx125f',
-          float_value: 0.0123456789123,
-          price: 12500,
-          found_date: '2024-01-15T13:20:00Z',
-          is_rare: true,
-          stickers: [
-            { id: 3, name: 'Katowice 2014', icon_url: 'https://steamcommunity-a.akamaihd.net/economy/image/class/730/496409995/200fx125f', price: 1000 },
-            { id: 4, name: 'Crown Foil', icon_url: 'https://steamcommunity-a.akamaihd.net/economy/image/class/730/496409995/200fx125f', price: 1500 },
-            { id: 5, name: 'Sticker 5', icon_url: 'https://steamcommunity-a.akamaihd.net/economy/image/class/730/496409995/200fx125f', price: 200 }
-          ]
-        },
-        {
-          id: 3,
-          market_name: 'M4A1-S | Hyper Beast (Minimal Wear)',
-          icon_url: 'https://steamcommunity-a.akamaihd.net/economy/image/class/730/496409995/200fx125f',
-          float_value: 0.0789123456789,
-          price: 2345,
-          found_date: '2024-01-15T12:15:00Z',
-          is_rare: false,
-          stickers: [
-            { id: 6, name: 'Sticker 6', icon_url: 'https://steamcommunity-a.akamaihd.net/economy/image/class/730/496409995/200fx125f', price: 25 },
-            { id: 7, name: 'Sticker 7', icon_url: 'https://steamcommunity-a.akamaihd.net/economy/image/class/730/496409995/200fx125f', price: 35 },
-            { id: 8, name: 'Sticker 8', icon_url: 'https://steamcommunity-a.akamaihd.net/economy/image/class/730/496409995/200fx125f', price: 45 },
-            { id: 9, name: 'Sticker 9', icon_url: 'https://steamcommunity-a.akamaihd.net/economy/image/class/730/496409995/200fx125f', price: 55 }
-          ]
-        }
-      ]
 
     }
   },
@@ -236,27 +192,12 @@ export default {
       this.loading = true
 
       try {
-        // Заглушка для демонстрации
-        await new Promise(resolve => setTimeout(resolve, 1000))
+        let response = await $api.lots.index({...filter, per_page: this.perPage, page: this.page, sort_by: this.sortBy})
 
-        // В реальном приложении здесь будет API запрос
-        const response = {
-          data: this.demoData,
-          total: 150,
-          rare_count: 23,
-          has_more: this.currentPage < 3 // Демо ограничение
-        }
-
-        if (this.currentPage === 1) {
-          this.skins = response.data
-        } else {
-          this.skins.push(...response.data)
-        }
-
-        this.totalItems = response.total
-        this.rareCount = response.rare_count
-        this.hasMore = response.has_more
-
+        this.skins = response.data.data
+        this.totalItems = response.data.total ?? 1000
+        this.rareCount = response.data.rare_count ?? 1000
+        this.hasMore = response.data.has_more ?? true
       } catch (error) {
         console.error('Ошибка загрузки скинов:', error)
       } finally {
@@ -280,8 +221,8 @@ export default {
 
     resetFilters() {
       this.filters = {
-        rareOnly: false,
-        itemId: ''
+        is_rare: false,
+        skin_id: undefined
       }
       this.sortBy = 'date'
     },

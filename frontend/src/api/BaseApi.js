@@ -14,8 +14,8 @@ class BaseApi {
     }
   }
 
-  async index(params = null) {
-    return await axios.get(this.url.index(), params)
+  async index(query = null) {
+    return await axios.get(this.url.index(), {params: query})
   }
 
   async update(id, data){
