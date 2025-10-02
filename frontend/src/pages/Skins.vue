@@ -26,7 +26,7 @@
               <input
                   type="radio"
                   v-model="filters.is_rare"
-                  :value="false"
+                  :value="undefined"
                   class="radio-input"
               >
               <span class="radio-custom"></span>
@@ -36,7 +36,7 @@
               <input
                   type="radio"
                   v-model="filters.is_rare"
-                  :value="true"
+                  :value="1"
                   class="radio-input"
               >
               <span class="radio-custom"></span>
@@ -49,7 +49,7 @@
         <div class="filter-group">
           <label class="filter-label">Предмет</label>
           <select v-model="filters.skin_id" class="select-field">
-            <option value="">Все предметы</option>
+            <option :value="undefined">Все предметы</option>
             <option
                 v-for="item in availableItems"
                 :key="item.id"
@@ -81,12 +81,7 @@
     </div>
 
     <!-- Сетка карточек -->
-    <div
-        class="skins-grid"
-        v-infinite-scroll="loadMore"
-        infinite-scroll-disabled="loading"
-        infinite-scroll-distance="100"
-    >
+    <div class="skins-grid">
       <SkinCard
           v-for="skin in skins"
           :key="skin.id"
@@ -129,7 +124,6 @@
 import SkinCard from '@/components/SkinCard.vue'
 import SkinDialog from '@/components/SkinDialog.vue'
 import {$api} from "@/api";
-import {filter} from "core-js/internals/array-iteration";
 
 export default {
   name: 'FoundSkinsPage',
@@ -148,23 +142,15 @@ export default {
       rareCount: 0,
       selectedSkin: null,
       showDetailsDialog: false,
+      scrollThrottle: false,
 
       filters: {
-        is_rare: false,
+        is_rare: undefined,
         skin_id: undefined
       },
 
       sortBy: 'date',
-
-      // Заглушка доступных предметов
-      availableItems: [
-        { id: 1, market_name: 'AK-47 | Redline' },
-        { id: 2, market_name: 'AWP | Asiimov' },
-        { id: 3, market_name: 'M4A1-S | Hyper Beast' },
-        { id: 4, market_name: 'Glock-18 | Water Elemental' },
-        { id: 5, market_name: 'Desert Eagle | Blaze' }
-      ],
-
+      availableItems: [],
     }
   },
 
@@ -173,7 +159,8 @@ export default {
       handler() {
         this.resetAndLoad()
       },
-      deep: true
+      deep: true,
+      immediate: false
     },
 
     sortBy() {
@@ -183,6 +170,23 @@ export default {
 
   mounted() {
     this.loadSkins()
+    window.addEventListener('scroll', this.handleScroll)
+    window.addEventListener('resize', this.handleScroll)
+  },
+
+  beforeDestroy() {
+    window.removeEventListener('scroll', this.handleScroll)
+    window.removeEventListener('resize', this.handleScroll)
+  },
+
+  async created() {
+    try {
+      const response = await $api.skinSearch.all()
+      this.availableItems = response.data.data
+    }
+    catch (e) {
+      this.$toast.error(e.message)
+    }
   },
 
   methods: {
@@ -192,16 +196,46 @@ export default {
       this.loading = true
 
       try {
-        let response = await $api.lots.index({...filter, per_page: this.perPage, page: this.page, sort_by: this.sortBy})
+        const params = {
+          per_page: this.perPage,
+          page: this.currentPage,
+          sort_by: this.sortBy,
+          ...this.filters
+        }
 
-        this.skins = response.data.data
-        this.totalItems = response.data.total ?? 1000
-        this.rareCount = response.data.rare_count ?? 1000
-        this.hasMore = response.data.has_more ?? true
+        let response = await $api.lots.index(params)
+
+        if (this.currentPage === 1) {
+          this.skins = response.data.data
+        } else {
+          this.skins.push(...response.data.data)
+        }
+
+        this.totalItems = response.data.meta.total ?? 110
+        this.rareCount = response.data.meta.rare_count ?? 10
+        this.hasMore = response.data.meta.total_pages !== response.data.meta.current_page
+
       } catch (error) {
-        console.error('Ошибка загрузки скинов:', error)
+        this.$toast.error(error.message)
       } finally {
         this.loading = false
+        this.scrollThrottle = false
+      }
+    },
+
+    handleScroll() {
+      if (this.loading || this.scrollThrottle || !this.hasMore) return
+
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+      const windowHeight = window.innerHeight
+      const documentHeight = document.documentElement.scrollHeight
+
+      const scrollBottom = scrollTop + windowHeight
+      const scrollThreshold = documentHeight - 100
+
+      if (scrollBottom >= scrollThreshold) {
+        this.scrollThrottle = true
+        this.loadMore()
       }
     },
 
@@ -221,7 +255,7 @@ export default {
 
     resetFilters() {
       this.filters = {
-        is_rare: false,
+        is_rare: undefined,
         skin_id: undefined
       }
       this.sortBy = 'date'
@@ -235,13 +269,12 @@ export default {
     closeSkinDetails() {
       this.showDetailsDialog = false
       this.selectedSkin = null
-    }
+    },
   }
 }
 </script>
 
 <style scoped>
-/* Стили остаются такими же как в предыдущей версии */
 .found-skins-page {
   max-width: 1200px;
   margin: 0 auto;
@@ -255,6 +288,7 @@ export default {
   margin-bottom: 30px;
   padding-bottom: 20px;
   border-bottom: 1px solid #e1e5e9;
+  /* Убрал sticky и background */
 }
 
 .page-title {
@@ -400,9 +434,9 @@ export default {
 }
 
 .skins-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-  gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   margin-bottom: 30px;
 }
 
@@ -457,14 +491,6 @@ export default {
   font-size: 0.9rem;
 }
 
-.skins-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 30px;
-}
-
-
 /* Адаптивность */
 @media (max-width: 768px) {
   .page-header {
@@ -485,16 +511,6 @@ export default {
 
   .filter-group {
     min-width: auto;
-  }
-
-  .skins-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 480px) {
-  .skins-grid {
-    grid-template-columns: 1fr;
   }
 }
 </style>

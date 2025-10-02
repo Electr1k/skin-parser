@@ -5,6 +5,7 @@ namespace App\Repository\LotRepository;
 use App\Enums\Extremum;
 use App\Enums\LotsSortable;
 use App\Models\Lot;
+use App\Pagination\LotPagination;
 use App\Repository\Interfaces\LotInterface;
 use App\Repository\LotRepository\DTOs\PaginateDTO;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -21,10 +22,10 @@ class LotRepository implements LotInterface
             ->pluck('a');
     }
 
-    public function getPaginate(PaginateDTO $dto): LengthAwarePaginator
+    public function getPaginate(PaginateDTO $dto): LotPagination
     {
-        $isRareSql = "skin_settings.extremum = '" . Extremum::MIN->value . "' AND float < float_limit
-                        OR skin_settings.extremum = '" . Extremum::MAX->value . "' AND float > float_limit";
+        $isRareSql = "float IS NOT NULL AND skin_settings.extremum = '" . Extremum::MIN->value . "' AND float < float_limit
+                        OR float IS NOT NULL AND skin_settings.extremum = '" . Extremum::MAX->value . "' AND float > float_limit";
         $query = Lot::query()
             ->leftJoin('skin_settings', 'skin_settings.id', '=', 'lots.skin_id')
             ->select([
@@ -41,6 +42,22 @@ class LotRepository implements LotInterface
         $dto->sortBy !== LotsSortable::DATE ? $query->orderBy($dto->sortBy->value) : $query->orderByDesc('lots.created_at');
         $dto->isRare && $query->whereRaw("$isRareSql");
 
-        return $query->paginate(perPage: $dto->perPage, page: $dto->page);
+        $paginator = $query->paginate(perPage: $dto->perPage, page: $dto->page);
+
+        $rareCountQuery = Lot::query()
+            ->leftJoin('skin_settings', 'skin_settings.id', '=', 'lots.skin_id')
+            ->whereRaw($isRareSql);
+
+        $dto->skinId && $rareCountQuery->whereSkinId($dto->skinId);
+
+        $totalRareCount = $rareCountQuery->count();
+
+        return new LotPagination(
+            $paginator->items(),
+            $paginator->total(),
+            $paginator->perPage(),
+            $paginator->currentPage(),
+            rareCount: $totalRareCount
+        );
     }
 }

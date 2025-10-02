@@ -16,6 +16,5 @@ Route::prefix('v1')->group(function () {
     });
     Route::prefix('lots')->group(function () {
         Route::get('/', [LotsController::class, 'index']);
-//        Route::get('/all', [SkinSettingsController::class, 'list']);
     });
 });

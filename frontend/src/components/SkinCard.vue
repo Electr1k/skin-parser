@@ -8,7 +8,7 @@
     <div class="skin-image-section">
       <div class="skin-image-wrapper">
         <img
-            :src="skin.icon_url"
+            :src="skin.icon"
             :alt="skin.market_name"
             class="skin-image"
         />
@@ -27,7 +27,7 @@
       <div class="skin-meta">
         <div class="meta-item">
           <span class="meta-label">Float</span>
-          <span class="meta-value float">{{ skin.float_value }}</span>
+          <span class="meta-value float">{{ skin.float }}</span>
         </div>
         <div class="meta-item">
           <span class="meta-label">Цена</span>
@@ -35,7 +35,7 @@
         </div>
         <div class="meta-item">
           <span class="meta-label">Дата</span>
-          <span class="meta-value date">{{ formatDateTime(skin.found_date) }}</span>
+          <span class="meta-value date">{{ formatDateTime(skin.found_at) }}</span>
         </div>
       </div>
     </div>
