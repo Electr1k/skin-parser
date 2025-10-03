@@ -2,24 +2,24 @@
 
 namespace App\Console\Commands;
 
-use App\UseCases\ImportStickerPricesJabka\Handler;
+use App\UseCases\ImportSkinPrices\Handler;
 use Illuminate\Console\Command;
 
-class ImportStickerPricesJabkaCommand extends Command
+class ImportSkinPricesCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'app:import-sticker-prices-jabka';
+    protected $signature = 'app:import-skin-prices';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Import sticker prices from jabka.skin';
+    protected $description = 'Import skin prices';
 
     /**
      * Execute the console command.

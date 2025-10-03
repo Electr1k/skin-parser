@@ -22,25 +22,47 @@ return new class extends Migration
 
             $table->string('m');
 
-            $table->string('skin_id')->comment('Идентификатор скина');
+            $table->string('skin_id')
+                ->index()
+                ->comment('Идентификатор скина');
 
-            $table->float('price', 2)->nullable()->default(null)->comment('Цена');
+            $table->float('price', 2)
+                ->nullable()
+                ->default(null)
+                ->comment('Цена');
 
-            $table->float('float')->nullable()->default(null)->comment('Float');
+            $table->float('float')
+                ->nullable()
+                ->default(null)
+                ->comment('Float');
 
-            $table->jsonb('stickers')->nullable()->default(null)->comment('Стикеры');
+            $table->jsonb('stickers')
+                ->nullable()
+                ->default(null)
+                ->comment('Стикеры');
 
-            $table->unsignedSmallInteger('page')->comment('Номер страницы, на которой находился лот');
+            $table->jsonb('keychains')
+                ->nullable()
+                ->default(null)
+                ->comment('Брелки');
 
-            $table->string('custom_name')->nullable()->default(null)->comment('Наймтег');
+            $table->unsignedSmallInteger('page')
+                ->comment('Номер страницы, на которой находился лот');
 
-            $table->string('price_dirty')->comment('Цена до нормализации');
+            $table->string('custom_name')
+                ->nullable()
+                ->default(null)
+                ->comment('Наймтег');
 
-            $table->string('inspect_link')->comment('Ссылка на осмотр');
+            $table->string('price_dirty')
+                ->comment('Цена до нормализации');
 
-            $table->index('skin_id', 'float');
+            $table->string('inspect_link')
+                ->comment('Ссылка на осмотр');
 
             $table->timestamps();
+
+            $table->index('created_at');
         });
     }
 

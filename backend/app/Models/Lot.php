@@ -17,6 +17,7 @@ use Illuminate\Support\Collection;
  * @property float|null $price - Цена
  * @property float|null $float - Float
  * @property array|null $stickers - Стикеры
+ * @property array|null $keychains - Стикеры
  * @property integer $page - Номер страницы, на которой находился лот
  * @property string|null $custom_name - Наймтег
  * @property string $price_dirty - Цена до нормализации
@@ -36,6 +37,7 @@ class Lot extends Model
 
     protected $casts = [
         'stickers' => 'array',
+        'keychains' => 'array',
     ];
 
 
