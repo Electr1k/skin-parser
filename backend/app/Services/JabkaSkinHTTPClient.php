@@ -7,30 +7,35 @@ use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
 
+
 /**
- * Для интеграции с csfloat
+ * Для интеграции с jabka.skin
  */
-class CSFloatHTTPClient
+class JabkaSkinHTTPClient
 {
 
     protected string $host;
     protected int $timeout;
 
+    protected const string API_STICKER = '/api/items/wiki/cs2/other-categories/sticker';
+
+    protected const string API_CHARM = '/api/items/wiki/cs2/other-categories/charm';
+
     public function __construct()
     {
         /** @var string $host */
-        $host = config('csfloat.client.host');
+        $host = config('jabka_skin.client.host');
         if (! $host) {
-            throw new RuntimeException('Empty config [csfloat.client.timeout]');
+            throw new RuntimeException('Empty config [jabka_skin.client.timeout]');
         }
         $this->host = $host;
 
-        $timeout = config('csfloat.client.timeout');
+        $timeout = config('jabka_skin.client.timeout');
         if (! $timeout) {
-            throw new RuntimeException('Empty config [csfloat.client.timeout]');
+            throw new RuntimeException('Empty config [jabka_skin.client.timeout]');
         }
         if (! is_int($timeout)) {
-            throw new RuntimeException('Config [csfloat.client.timeout] must be int');
+            throw new RuntimeException('Config [jabka_skin.client.timeout] must be int');
         }
         $this->timeout = $timeout;
     }
@@ -74,11 +79,30 @@ class CSFloatHTTPClient
      * @throws RequestException
      * @throws ConnectionException
      */
-    public function getFloatByInspectLink(string $inspectLink): array {
+    public function getStickers(int $page = 1, int $pageSize = 1000): array {
         return $this->makeRequest(
             method: 'GET',
-            uri: '/',
-            queryParameters: ['url' => $inspectLink,]
+            uri: self::API_STICKER,
+            queryParameters: [
+                'page' => $page,
+                'pageSize' => $pageSize,
+            ]
+        );
+    }
+
+
+    /**
+     * @throws RequestException
+     * @throws ConnectionException
+     */
+    public function getKeychains(int $page = 1, int $pageSize = 1000): array {
+        return $this->makeRequest(
+            method: 'GET',
+            uri: self::API_CHARM,
+            queryParameters: [
+                'page' => $page,
+                'pageSize' => $pageSize,
+            ]
         );
     }
 }

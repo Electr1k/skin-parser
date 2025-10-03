@@ -6,26 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    private const string TABLE_NAME = 'lots_history';
+    protected const string TABLE_NAME = 'rarities';
+
     /**
      * Run the migrations.
      */
     public function up(): void
     {
         Schema::create(self::TABLE_NAME, function (Blueprint $table) {
-            $table->comment('История изменения лотов');
+            $table->comment('Редкости предметов');
 
-            $table->id();
+            $table->string('id')->primary()->comment('Идентификатор');
 
-            $table->bigInteger('lot_id')->comment('Идентификатор лота');
+            $table->string('name')->comment('Название');
 
-            $table->jsonb('before')->comment('До изменений');
-
-            $table->jsonb('changes')->comment('Изменения');
-
-            $table->index('lot_id');
-
-            $table->foreign('lot_id')->references('a')->on('lots');
+            $table->string('color')->comment('Цвет');
 
             $table->timestamps();
         });
