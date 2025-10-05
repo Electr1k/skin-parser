@@ -11,10 +11,10 @@ use Spatie\LaravelData\Mappers\SnakeCaseMapper;
 class PaginateDTO extends Data
 {
     public function __construct(
-        public readonly bool $isRare = false,
+        public readonly bool         $isRareFloat = false,
         public readonly LotsSortable $sortBy = LotsSortable::DATE,
-        public readonly ?string $skinId = null,
-        public readonly int $page = 1,
-        public readonly int $perPage = 10,
+        public readonly ?string      $skinId = null,
+        public readonly int          $page = 1,
+        public readonly int          $perPage = 10,
     ){}
 }

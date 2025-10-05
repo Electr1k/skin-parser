@@ -11,7 +11,7 @@ class LotsIndexRequest extends ApiRequest
     public function rules(): array
     {
         return [
-            'is_rare' => ['bail', 'boolean'],
+            'is_rare_float' => ['bail', 'boolean'],
             'sort_by' => ['string', Rule::enum(LotsSortable::class)],
             'skin_id' => ['string', 'exists:skin_settings,id'],
             'page' => ['nullable', 'integer', 'min:1'],

@@ -26,6 +26,9 @@ use Illuminate\Support\Collection;
  * @property SkinSettings $skinSettings
  * @property Collection<LotHistory> $lotHistory
  * @method static LotBuilder query()
+ *
+ * @property Collection<Sticker> $stickerModels
+ * @property float $stickersPrice
  */
 class Lot extends Model
 {
@@ -38,6 +41,7 @@ class Lot extends Model
     protected $casts = [
         'stickers' => 'array',
         'keychains' => 'array',
+        'price' => 'float'
     ];
 
 
@@ -56,11 +60,12 @@ class Lot extends Model
     public function stickerModels(): Collection
     {
         return Sticker::query()
+            ->with('price')
             ->whereIn('stickers.id', array_column($this->stickers ?? [], 'stickerId'))
             ->get();
     }
 
-    public function getStickersPrice(): float
+    public function stickersPrice(): float
     {
         return Sticker::query()
             ->join('prices', 'prices.name', '=', 'stickers.name')

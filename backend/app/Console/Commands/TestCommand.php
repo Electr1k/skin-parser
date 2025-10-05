@@ -2,12 +2,15 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\Extremum;
 use App\Events\LotIsRare;
 use App\Jobs\CheckLotsJob;
 use App\Models\Lot;
 use App\Models\SkinSettings;
-use App\UseCases\DispatchCheckLots\Handler;
+use App\UseCases\FetchLotsPaginated\DataInput;
+use App\UseCases\FetchLotsPaginated\Handler;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class TestCommand extends Command
 {
@@ -30,10 +33,9 @@ class TestCommand extends Command
      */
     public function handle(Handler $handler): int
     {
-        $lot = Lot::query()->whereNotNull('stickers')->first();
-
-        event(new LotIsRare($lot));
-
+        $dataInput = new DataInput(perPage: 1000, );
+        $data = $handler->handle($dataInput);
+        dd($data->whereNotNull('stickers')->where('stickers', '!=', [])->toArray());
         return self::SUCCESS;
     }
 }
