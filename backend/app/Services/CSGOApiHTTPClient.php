@@ -18,11 +18,15 @@ class CSGOApiHTTPClient
 
     private const string CSGO_API = '/CSGO-API/main/public/api';
 
+    private const string CS_FILE_TRACKER = '/counter-strike-file-tracker/refs/heads/main/static/';
+
     private const string STEAM_PRICE_API = '/counter-strike-price-tracker/refs/heads/main/static';
 
     protected const string STICKERS = self::CSGO_API.'/en/stickers.json';
 
     protected const string KEYCHAINS = self::CSGO_API.'/en/keychains.json';
+
+    protected const string ITEMS_GAME = self::CS_FILE_TRACKER.'/items_game.json';
 
     protected const string PRICES = self::STEAM_PRICE_API.'/prices/latest.json';
 
@@ -95,6 +99,18 @@ class CSGOApiHTTPClient
         return $this->makeRequest(
             method: 'GET',
             uri: self::PRICES,
+        );
+    }
+
+    /**
+     * @throws RequestException
+     * @throws ConnectionException
+     */
+    public function getItems(): array
+    {
+        return $this->makeRequest(
+            method: 'GET',
+            uri: self::ITEMS_GAME,
         );
     }
 }

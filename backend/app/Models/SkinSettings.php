@@ -31,6 +31,7 @@ class SkinSettings extends Model
 
     protected $table = 'skin_settings';
     public $incrementing = false;
+
     protected $keyType = 'string';
     protected $guarded = false;
 

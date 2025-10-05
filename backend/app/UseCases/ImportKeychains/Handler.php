@@ -2,6 +2,7 @@
 
 namespace App\UseCases\ImportKeychains;
 
+use App\Models\Highlight;
 use App\Models\Keychain;
 use App\Models\Rarity;
 use App\Services\CSGOApiHTTPClient;
@@ -15,24 +16,34 @@ readonly class Handler
     {
         $response = $this->apiHTTPClient->getKeychains();
 
-        foreach ($response as $sticker) {
+        foreach ($response as $keychain) {
             $rarity = Rarity::query()
                 ->updateOrCreate(
-                    ['id' => $sticker['rarity']['id']],
+                    ['id' => $keychain['rarity']['id']],
                     [
-                        'name' => $sticker['rarity']['name'],
-                        'color' => $sticker['rarity']['color'],
+                        'name' => $keychain['rarity']['name'],
+                        'color' => $keychain['rarity']['color'],
                     ]
                 );
 
+            $isHighlight = $keychain['highlight'] ?? false;
+            $highlightName = null;
+            $highlightId = null;
+            if ($isHighlight) {
+                $highlightName = substr($keychain['id'], 10);
+                $highlightId = Highlight::query()->where('original_id', $highlightName)->first()?->id;
+            }
+
             Keychain::query()
                 ->updateOrCreate(
-                    ['id' => $sticker['def_index']],
+                    ['original_name' => $isHighlight ? $highlightName : substr($keychain['original']['loc_name'], 10)],
                     [
-                        'name' => $sticker['name'],
-                        'original_name' => $sticker['original']['loc_name'],
-                        'icon' => $sticker['image'],
+                        'name' => $keychain['name'],
+                        'id' => $keychain['def_index'],
+                        'icon' => $keychain['image'],
                         'rarity_id' => $rarity->id,
+                        'is_highlight' => $isHighlight,
+                        'highlight_id' => $highlightId,
                     ]
                 );
         }

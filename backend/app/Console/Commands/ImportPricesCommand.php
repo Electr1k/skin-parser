@@ -5,14 +5,14 @@ namespace App\Console\Commands;
 use App\UseCases\ImportSkinPrices\Handler;
 use Illuminate\Console\Command;
 
-class ImportSkinPricesCommand extends Command
+class ImportPricesCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'app:import-skin-prices';
+    protected $signature = 'app:import-prices';
 
     /**
      * The console command description.

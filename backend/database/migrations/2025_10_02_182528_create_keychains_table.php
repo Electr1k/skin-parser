@@ -6,23 +6,45 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    protected const string TABLE_NAME = 'keychains';
+
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::create('keychains', function (Blueprint $table) {
+        Schema::create(self::TABLE_NAME, function (Blueprint $table) {
             $table->comment('Брелки CS2');
 
-            $table->bigInteger('id')->primary()->comment('Идентификатор');
+            $table->string('original_name')
+                ->primary()
+                ->comment('Оригинальное название из файлов CS2');
 
-            $table->string('name')->index()->comment('Название');
+            $table->string('name')
+                ->index()
+                ->comment('Название');
 
-            $table->string('original_name')->index()->comment('Оригинальное название из файлов CS2');
+            $table->bigInteger('id')
+                ->unique()
+                ->nullable()
+                ->index()
+                ->comment('Идентификатор (индекс из списка брелков CS2)');
 
-            $table->string('icon')->comment('Иконка стикера');
+            $table->string('icon')
+                ->comment('Иконка брелка');
 
-            $table->string('rarity_id')->index()->comment('Идентификатор редкости');
+            $table->string('rarity_id')
+                ->index()
+                ->comment('Идентификатор редкости');
+
+            $table->boolean('is_highlight')
+                ->comment('Брелок - хайлайт');
+
+            $table->bigInteger('highlight_id')
+                ->unique()
+                ->nullable()
+                ->index()
+                ->comment('Идентификатор хайлайта');
 
             $table->timestamps();
         });
@@ -33,6 +55,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('keychains');
+        Schema::dropIfExists(self::TABLE_NAME);
     }
 };
