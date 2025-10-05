@@ -73,6 +73,11 @@ class Handler
                 ) {
                     event(new LotIsRare($lot));
                 }
+
+                // TODO: подумать если стикеры изменятся
+                if (in_array($lot->a, $lotIdsForCheck) && $lot->getStickersPrice() > 0.5) {
+                    event(new LotIsRare($lot));
+                }
             }
             $offset += $this->batchSize;
 

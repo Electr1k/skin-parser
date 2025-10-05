@@ -50,4 +50,21 @@ class Lot extends Model
     {
         return $this->hasMany(LotHistory::class, 'lot_id', 'a');
     }
+
+    // TODO: рефакторинг
+    /** @return Collection<Sticker> */
+    public function stickerModels(): Collection
+    {
+        return Sticker::query()
+            ->whereIn('stickers.id', array_column($this->stickers ?? [], 'stickerId'))
+            ->get();
+    }
+
+    public function getStickersPrice(): float
+    {
+        return Sticker::query()
+            ->join('prices', 'prices.name', '=', 'stickers.name')
+            ->whereIn('stickers.id', array_column($this->stickers ?? [], 'stickerId'))
+            ->rawValue('SUM(coalesce(last_24h, last_7d, last_30d, last_90d, last_ever, 0))') ?? 0;
+    }
 }

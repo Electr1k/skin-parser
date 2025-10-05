@@ -2,7 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Events\LotIsRare;
 use App\Jobs\CheckLotsJob;
+use App\Models\Lot;
 use App\Models\SkinSettings;
 use App\UseCases\DispatchCheckLots\Handler;
 use Illuminate\Console\Command;
@@ -28,15 +30,9 @@ class TestCommand extends Command
      */
     public function handle(Handler $handler): int
     {
-        CheckLotsJob::dispatchIf(true, 100);
+        $lot = Lot::query()->whereNotNull('stickers')->first();
 
-        $skinsForCheck = SkinSettings::query()
-            ->where('is_active', true)
-            ->get();
-
-        foreach ($skinsForCheck as $skin) {
-            CheckLotsJob::dispatch($skin);
-        }
+        event(new LotIsRare($lot));
 
         return self::SUCCESS;
     }
