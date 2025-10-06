@@ -2,11 +2,16 @@
   <v-app-bar app flat class="top-navigation" height="80">
     <v-container class="px-4">
       <v-row align="center" class="mx-0">
-        <!-- Логотип -->
-        <v-col cols="auto" class="pr-8">
-          <div class="logo">
-            <span class="logo-text">SkinFinder</span>
-          </div>
+        <!-- Логотип и название -->
+        <v-col cols="auto">
+          <router-link to="/" class="logo-link">
+            <div class="logo-container">
+              <div class="logo" >
+                <img width="40" height="40" src="../../public/favicon.png">
+              </div>
+              <span class="logo-text">SkinFinder</span>
+            </div>
+          </router-link>
         </v-col>
 
         <!-- Навигационные вкладки -->
@@ -87,7 +92,7 @@ export default {
   name: "TopNavigation",
   data() {
     return {
-      image: '', // Заглушка для аватара
+      image: '',
       tabs: [
         { icon: "mdi-home", text: "Главная", route: "dashboard" },
         { icon: "mdi-magnify", text: "Поиск скинов", route: "skin-search" },
@@ -112,13 +117,36 @@ export default {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
 }
 
+.logo-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
 .logo-text {
   font-size: 1.5rem;
   font-weight: 700;
   color: #2c3e50;
   letter-spacing: -0.5px;
+  white-space: nowrap;
 }
 
+/* Остальные стили без изменений */
 .nav-tabs {
   display: flex;
   gap: 8px;
@@ -163,7 +191,6 @@ export default {
   white-space: nowrap;
 }
 
-/* Стили для кнопки пользователя */
 .user-button {
   display: flex;
   align-items: center;
@@ -224,7 +251,6 @@ export default {
   transform: rotate(180deg);
 }
 
-/* Стили для выпадающего меню */
 .user-dropdown {
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);

@@ -34,7 +34,7 @@ readonly class SendLotIsRareTelegramNotification // implements ShouldQueue
             "URL: <a href='%s'>Страница: %s</a>",
             $lot->skinSettings->market_name,
             $lot->float,
-            $lot->getStickersPrice(),
+            $lot->stickersPrice(),
             $lot->stickerModels()->sortBy('slot')->map(fn(Sticker $sticker) => "$sticker->name ($" . $sticker->price?->last_24h . ")")->implode("\n"),
             $lot->price_dirty,
             $link,
