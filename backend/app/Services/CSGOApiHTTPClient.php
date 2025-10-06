@@ -26,6 +26,8 @@ class CSGOApiHTTPClient
 
     protected const string KEYCHAINS = self::CSGO_API.'/en/keychains.json';
 
+    protected const string SKINS = self::CSGO_API.'/en/skins.json';
+
     protected const string ITEMS_GAME = self::CS_FILE_TRACKER.'/items_game.json';
 
     protected const string PRICES = self::STEAM_PRICE_API.'/prices/latest.json';
@@ -111,6 +113,18 @@ class CSGOApiHTTPClient
         return $this->makeRequest(
             method: 'GET',
             uri: self::ITEMS_GAME,
+        );
+    }
+
+    /**
+     * @throws RequestException
+     * @throws ConnectionException
+     */
+    public function getSkins(): array
+    {
+        return $this->makeRequest(
+            method: 'GET',
+            uri: self::SKINS,
         );
     }
 }
