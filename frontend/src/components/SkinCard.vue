@@ -44,7 +44,7 @@
     <div class="stickers-section">
       <div class="stickers-list">
         <div
-            v-for="index in 4"
+            v-for="index in 5"
             :key="index"
             class="sticker-slot"
             :class="{ 'sticker-slot--empty': !getStickerBySlot(index - 1) }"

@@ -8,7 +8,6 @@ use App\Models\Lot;
 use App\Pagination\LotPagination;
 use App\Repository\Interfaces\LotInterface;
 use App\Repository\LotRepository\DTOs\PaginateDTO;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -59,32 +58,40 @@ class LotRepository implements LotInterface
 
     public function getLotsWithStickers(iterable $lotIds): Collection
     {
-        return Lot::query()
-            ->crossJoin(DB::raw('LATERAL jsonb_array_elements(lots.stickers::jsonb) AS item'))
+        $subQuery = Lot::query()
+            ->select([
+                'lots.a',
+                DB::raw("ROW_NUMBER() OVER (PARTITION BY lots.a ORDER BY s.name) - 1 as slot"),
+                DB::raw("(item->>'stickerId')::int as sticker_id"),
+                's.name',
+                's.icon',
+                DB::raw("CASE WHEN item->'wear' IS NULL THEN '0' ELSE item->>'wear' END as wear"),
+                DB::raw("ROUND(COALESCE(p.last_24h, p.last_7d, p.last_30d, p.last_90d, p.last_ever)::numeric, 2)::float as price")
+            ])
+            ->crossJoin(DB::raw('LATERAL jsonb_array_elements(lots.stickers) AS item'))
             ->leftJoin('stickers as s', DB::raw("(item->>'stickerId')::int"), '=', 's.id')
             ->leftJoin('prices as p', 's.name', '=', 'p.name')
-            ->whereIn('lots.a', $lotIds)
-            ->groupBy('a')
+            ->whereIn('lots.a', $lotIds);
+
+        return DB::table(DB::raw("({$subQuery->toSql()}) as sub"))
+            ->mergeBindings($subQuery->getQuery())
             ->select([
                 'a',
-                DB::raw("json_agg(
+                DB::raw(
+                "json_agg(
                     json_build_object(
-                        'slot', (item->>'slot')::int,
-                        'stickerId', (item->>'stickerId')::int,
-                        'name', s.name,
-                        'icon', s.icon,
-                        'wear', CASE WHEN item->'wear' IS NULL THEN '0' ELSE item->>'wear' END,
-                        'price', ROUND(COALESCE(
-                            p.last_24h,
-                            p.last_7d,
-                            p.last_30d,
-                            p.last_90d,
-                            p.last_ever
-                        )::numeric, 2)::float
+                        'slot', slot,
+                        'stickerId', sticker_id,
+                        'name', name,
+                        'icon', icon,
+                        'wear', wear,
+                        'price', price
                     )
                 ) as stickers"),
-                DB::raw("ROUND(SUM(CASE WHEN item->'wear' IS NULL THEN COALESCE(p.last_24h, p.last_7d, p.last_30d, p.last_90d, p.last_ever) else 0 end)::numeric, 2) as stickers_price")
+                DB::raw("ROUND(SUM(CASE WHEN wear = '0' THEN price ELSE 0 END)::numeric, 2) as stickers_price")
             ])
-            ->get();
+            ->groupBy('a')
+            ->get()
+            ->map(function ($lot){ $lot->stickers = json_decode($lot->stickers); return $lot;});
     }
 }

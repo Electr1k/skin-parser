@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LotsIndexRequest;
 use App\Http\Resources\LotCollection;
-use App\Http\Resources\LotResource;
 use App\Repository\SkinSettings\SkinSettingsRepository;
 use App\UseCases\FetchLotsPaginated\DataInput as PaginatedDataInput;
 use App\UseCases\FetchLotsPaginated\Handler as PaginatedHandler;

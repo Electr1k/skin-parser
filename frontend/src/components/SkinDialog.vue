@@ -41,7 +41,7 @@
           <h3 class="section-title">Стикеры</h3>
           <div class="stickers-grid">
             <div
-                v-for="index in 4"
+                v-for="index in 5"
                 :key="index"
                 class="sticker-slot"
                 :class="{ 'sticker-slot--empty': !getStickerBySlot(index - 1) }"
@@ -297,7 +297,7 @@ export default {
 
 .stickers-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 12px; /* Увеличили отступы */
   margin-bottom: 12px;
 }
