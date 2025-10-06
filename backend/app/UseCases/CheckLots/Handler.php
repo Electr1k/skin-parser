@@ -75,7 +75,7 @@ class Handler
                 }
 
                 // TODO: подумать если стикеры изменятся
-                if (in_array($lot->a, $lotIdsForCheck) && $lot->getStickersPrice() > 0.5) {
+                if (in_array($lot->a, $lotIdsForCheck) && $lot->stickersPrice() > 0.5) {
                     event(new LotIsRare($lot));
                 }
             }
