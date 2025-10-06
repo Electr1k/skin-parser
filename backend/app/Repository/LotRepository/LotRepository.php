@@ -63,16 +63,17 @@ class LotRepository implements LotInterface
             ->crossJoin(DB::raw('LATERAL jsonb_array_elements(lots.stickers::jsonb) AS item'))
             ->leftJoin('stickers as s', DB::raw("(item->>'stickerId')::int"), '=', 's.id')
             ->leftJoin('prices as p', 's.name', '=', 'p.name')
-            ->whereIn('lots.d', $lotIds)
-            ->groupBy('d')
+            ->whereIn('lots.a', $lotIds)
+            ->groupBy('a')
             ->select([
-                'd',
+                'a',
                 DB::raw("json_agg(
                     json_build_object(
                         'slot', (item->>'slot')::int,
                         'stickerId', (item->>'stickerId')::int,
                         'name', s.name,
                         'icon', s.icon,
+                        'wear', CASE WHEN item->'wear' IS NULL THEN '0' ELSE item->>'wear' END,
                         'price', ROUND(COALESCE(
                             p.last_24h,
                             p.last_7d,
@@ -82,7 +83,7 @@ class LotRepository implements LotInterface
                         )::numeric, 2)::float
                     )
                 ) as stickers"),
-                DB::raw("ROUND(SUM(COALESCE(p.last_24h, p.last_7d, p.last_30d, p.last_90d, p.last_ever))::numeric,2) as stickers_price")
+                DB::raw("ROUND(SUM(CASE WHEN item->'wear' IS NULL THEN COALESCE(p.last_24h, p.last_7d, p.last_30d, p.last_90d, p.last_ever) else 0 end)::numeric, 2) as stickers_price")
             ])
             ->get();
     }

@@ -16,69 +16,14 @@
     </div>
 
     <!-- Фильтры и сортировка -->
-    <div class="filters-section">
-      <div class="filters-row">
-        <!-- Фильтр по редкости -->
-        <div class="filter-group">
-          <label class="filter-label">Редкость</label>
-          <div class="radio-group">
-            <label class="radio-label">
-              <input
-                  type="radio"
-                  v-model="filters.is_rare"
-                  :value="undefined"
-                  class="radio-input"
-              >
-              <span class="radio-custom"></span>
-              <span class="radio-text">Все скины</span>
-            </label>
-            <label class="radio-label">
-              <input
-                  type="radio"
-                  v-model="filters.is_rare"
-                  :value="1"
-                  class="radio-input"
-              >
-              <span class="radio-custom"></span>
-              <span class="radio-text">Только редкие</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- Фильтр по предмету -->
-        <div class="filter-group">
-          <label class="filter-label">Предмет</label>
-          <select v-model="filters.skin_id" class="select-field">
-            <option :value="undefined">Все предметы</option>
-            <option
-                v-for="item in availableItems"
-                :key="item.id"
-                :value="item.id"
-            >
-              {{ item.market_name }}
-            </option>
-          </select>
-        </div>
-
-        <!-- Сортировка -->
-        <div class="filter-group">
-          <label class="filter-label">Сортировка</label>
-          <select v-model="sortBy" class="select-field">
-            <option value="date">По дате</option>
-            <option value="float">По float</option>
-            <option value="price">По цене</option>
-          </select>
-        </div>
-
-        <!-- Кнопка сброса -->
-        <button class="reset-filters" @click="resetFilters">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-            <path d="M12.5 3.5L3.5 12.5M3.5 3.5L12.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-          Сбросить
-        </button>
-      </div>
-    </div>
+    <SkinFilters
+        :filters="filters"
+        :sort-by="sortBy"
+        :available-items="availableItems"
+        @update:filters="updateFilters"
+        @update:sortBy="updateSortBy"
+        @reset="resetFilters"
+    />
 
     <!-- Сетка карточек -->
     <div class="skins-grid">
@@ -123,12 +68,14 @@
 <script>
 import SkinCard from '@/components/SkinCard.vue'
 import SkinDialog from '@/components/SkinDialog.vue'
+import SkinFilters from '@/components/SkinFilters.vue'
 import {$api} from "@/api";
 
 export default {
   name: 'FoundSkinsPage',
   components: {
     SkinCard,
+    SkinFilters,
     SkinDetailsDialog: SkinDialog
   },
   data() {
@@ -137,7 +84,7 @@ export default {
       loading: false,
       hasMore: true,
       currentPage: 1,
-      perPage: 20,
+      perPage: 100,
       totalItems: 0,
       rareCount: 0,
       selectedSkin: null,
@@ -145,6 +92,8 @@ export default {
       scrollThrottle: false,
 
       filters: {
+        is_rare_float: undefined,
+        has_sticker: undefined,
         is_rare: undefined,
         skin_id: undefined
       },
@@ -183,13 +132,20 @@ export default {
     try {
       const response = await $api.skinSearch.all()
       this.availableItems = response.data.data
-    }
-    catch (e) {
+    } catch (e) {
       this.$toast.error(e.message)
     }
   },
 
   methods: {
+    updateFilters(newFilters) {
+      this.filters = newFilters
+    },
+
+    updateSortBy(newSortBy) {
+      this.sortBy = newSortBy
+    },
+
     async loadSkins() {
       if (this.loading) return
 
@@ -202,6 +158,13 @@ export default {
           sort_by: this.sortBy,
           ...this.filters
         }
+
+        // Очищаем параметры
+        Object.keys(params).forEach(key => {
+          if (params[key] === undefined || params[key] === '') {
+            delete params[key]
+          }
+        })
 
         let response = await $api.lots.index(params)
 
@@ -255,6 +218,8 @@ export default {
 
     resetFilters() {
       this.filters = {
+        is_rare_float: undefined,
+        has_sticker: undefined,
         is_rare: undefined,
         skin_id: undefined
       }
@@ -288,7 +253,6 @@ export default {
   margin-bottom: 30px;
   padding-bottom: 20px;
   border-bottom: 1px solid #e1e5e9;
-  /* Убрал sticky и background */
 }
 
 .page-title {
@@ -325,114 +289,6 @@ export default {
   margin-top: 4px;
 }
 
-.filters-section {
-  background: #ffffff;
-  border: 1px solid #e1e5e9;
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 30px;
-}
-
-.filters-row {
-  display: flex;
-  align-items: end;
-  gap: 24px;
-  flex-wrap: wrap;
-}
-
-.filter-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 150px;
-}
-
-.filter-label {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #4a5568;
-}
-
-.radio-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.radio-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  color: #4a5568;
-}
-
-.radio-input {
-  display: none;
-}
-
-.radio-custom {
-  width: 16px;
-  height: 16px;
-  border: 2px solid #cbd5e0;
-  border-radius: 50%;
-  position: relative;
-  transition: all 0.2s ease;
-}
-
-.radio-input:checked + .radio-custom {
-  border-color: #1976d2;
-  background: #1976d2;
-}
-
-.radio-input:checked + .radio-custom::after {
-  content: '';
-  width: 6px;
-  height: 6px;
-  background: white;
-  border-radius: 50%;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.select-field {
-  padding: 10px 12px;
-  border: 1px solid #e1e5e9;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  background: #ffffff;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.select-field:focus {
-  outline: none;
-  border-color: #1976d2;
-  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
-}
-
-.reset-filters {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 16px;
-  border: 1px solid #e1e5e9;
-  border-radius: 8px;
-  background: #ffffff;
-  color: #718096;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.reset-filters:hover {
-  background: #f8f9fa;
-  border-color: #cbd5e0;
-}
-
 .skins-grid {
   display: flex;
   flex-direction: column;
@@ -459,8 +315,12 @@ export default {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .end-of-list {
@@ -502,15 +362,6 @@ export default {
   .stats {
     align-self: stretch;
     justify-content: space-around;
-  }
-
-  .filters-row {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .filter-group {
-    min-width: auto;
   }
 }
 </style>

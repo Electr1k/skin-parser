@@ -25,10 +25,11 @@ class LotResource extends JsonResource
             'market_name' => $this->market_name,
             'float' => $this->float,
             'price' => $this->price,
+            'page' => $this->page,
             'found_at' => $this->founded_at,
             'stickers' => StickerOnSkinResource::collection($this->stickers),
             'stickers_price' => $this->stickers_price,
-            'is_rare' => $this->is_rare_float,
+            'is_rare_float' => $this->is_rare_float,
             'inspect_link' => $this->inspect_link,
             'steam_link' => "https://steamcommunity.com/market/listings/730/$this->skin_id#buylisting|$this->m|730|2|$this->a",
         ];

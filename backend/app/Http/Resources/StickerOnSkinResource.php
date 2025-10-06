@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @mixin array{slot: int, stickerId: int, name: string, icon: string, price: float}
+ * @mixin array{slot: int, stickerId: int, name: string, icon: string, price: float, wear: string}
  */
 class StickerOnSkinResource extends JsonResource
 {
@@ -15,6 +15,7 @@ class StickerOnSkinResource extends JsonResource
         return [
             'slot' => $this['slot'],
             'sticker_id' => $this['stickerId'],
+            'wear' => round($this['wear'], 2),
             'name' => $this['name'],
             'icon' => $this['icon'],
             'price' => $this['price'],

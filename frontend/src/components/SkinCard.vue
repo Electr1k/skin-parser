@@ -1,7 +1,7 @@
 <template>
   <div
       class="skin-card"
-      :class="{ 'skin-card--rare': skin.is_rare }"
+      :class="{ 'skin-card--rare': skin.is_rare_float }"
       @click="$emit('click', skin)"
   >
     <!-- Изображение скина -->
@@ -12,7 +12,7 @@
             :alt="skin.market_name"
             class="skin-image"
         />
-        <div v-if="skin.is_rare" class="rare-indicator">
+        <div v-if="skin.is_rare_float" class="rare-indicator">
           <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
             <path d="M8 1l1.5 4.5L14 6l-3.5 3 1 4.5L8 11.5 4.5 13.5l1-4.5L2 6l4.5-.5L8 1z" fill="currentColor"/>
           </svg>
@@ -31,7 +31,7 @@
         </div>
         <div class="meta-item">
           <span class="meta-label">Цена</span>
-          <span class="meta-value price">{{ formatPrice(skin.price) }}</span>
+          <span class="meta-value price">{{ formatPriceRUB(skin.price) }}</span>
         </div>
         <div class="meta-item">
           <span class="meta-label">Дата</span>
@@ -47,17 +47,22 @@
             v-for="index in 4"
             :key="index"
             class="sticker-slot"
-            :class="{ 'sticker-slot--empty': !getSticker(index - 1) }"
+            :class="{ 'sticker-slot--empty': !getStickerBySlot(index - 1) }"
         >
-          <div v-if="getSticker(index - 1)" class="sticker-item">
-            <div class="sticker-image-wrapper">
+          <div v-if="getStickerBySlot(index - 1)" class="sticker-item">
+            <div class="sticker-image-wrapper" :title="getStickerBySlot(index - 1).name">
               <img
-                  :src="getSticker(index - 1).icon_url"
-                  :alt="getSticker(index - 1).name"
+                  :src="getStickerBySlot(index - 1).icon"
+                  :alt="getStickerBySlot(index - 1).name"
                   class="sticker-image"
               />
             </div>
-            <div class="sticker-price">{{ formatPrice(getSticker(index - 1).price) }}</div>
+            <div class="sticker-info">
+              <div class="sticker-price">{{ formatPriceUSD(getStickerBySlot(index - 1).price) }}</div>
+              <div v-if="getStickerBySlot(index - 1).wear > 0" class="sticker-wear">
+                {{ formatWear(getStickerBySlot(index - 1).wear) }}
+              </div>
+            </div>
           </div>
           <div v-else class="empty-slot">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
@@ -66,6 +71,10 @@
             </svg>
           </div>
         </div>
+      </div>
+      <!-- Общая цена стикеров -->
+      <div v-if="skin.stickers_price > 0" class="stickers-total">
+        Стикеры: {{ formatPriceUSD(skin.stickers_price) }}
       </div>
     </div>
   </div>
@@ -80,12 +89,27 @@ export default {
       required: true
     }
   },
+  computed: {
+    sortedStickers() {
+      if (!this.skin.stickers) return []
+      // Сортируем стикеры по slot
+      return [...this.skin.stickers].sort((a, b) => (a.slot || 0) - (b.slot || 0))
+    }
+  },
   methods: {
-    formatPrice(price) {
+    formatPriceRUB(price) {
       return new Intl.NumberFormat('ru-RU', {
         style: 'currency',
         currency: 'RUB',
         minimumFractionDigits: 0
+      }).format(price)
+    },
+
+    formatPriceUSD(price) {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2
       }).format(price)
     },
 
@@ -100,8 +124,13 @@ export default {
       })
     },
 
-    getSticker(index) {
-      return this.skin.stickers && this.skin.stickers[index] ? this.skin.stickers[index] : null
+    formatWear(wear) {
+      // Конвертируем в проценты и округляем
+      return Math.round(wear * 100) + '%'
+    },
+
+    getStickerBySlot(slot) {
+      return this.sortedStickers.find(sticker => sticker.slot === slot) || null
     }
   }
 }
@@ -246,6 +275,10 @@ export default {
   top: 50%;
   transform: translateY(-50%);
   z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px; /* Увеличили отступ между стикерами и общей ценой */
 }
 
 .stickers-list {
@@ -284,6 +317,23 @@ export default {
   padding: 4px;
   transition: transform 0.2s ease;
   flex-shrink: 0;
+  position: relative;
+  cursor: help; /* Изменяем курсор при наведении */
+}
+
+.sticker-image-wrapper:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  z-index: 10;
 }
 
 .sticker-item:hover .sticker-image-wrapper {
@@ -296,6 +346,13 @@ export default {
   object-fit: contain;
 }
 
+.sticker-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
 .sticker-price {
   font-size: 0.7rem;
   font-weight: 600;
@@ -305,6 +362,28 @@ export default {
   border-radius: 8px;
   white-space: nowrap;
   flex-shrink: 0;
+}
+
+.sticker-wear {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #e53e3e;
+  background: #fed7d7;
+  padding: 1px 4px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+/* Общая цена стикеров */
+.stickers-total {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #666;
+  background: #f5f5f5;
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  margin-top: 8px; /* Добавили отступ сверху */
 }
 
 /* Пустые слоты */
@@ -393,6 +472,10 @@ export default {
     width: 100%;
     margin-top: 12px;
     left: auto;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
   }
 
   .stickers-list {
@@ -403,6 +486,11 @@ export default {
 
   .sticker-slot {
     height: auto;
+  }
+
+  .stickers-total {
+    margin-top: 0;
+    margin-left: auto;
   }
 }
 
@@ -428,6 +516,11 @@ export default {
     font-size: 0.8rem;
   }
 
+  .stickers-section {
+    flex-direction: column;
+    gap: 8px;
+  }
+
   .stickers-list {
     gap: 8px;
   }
@@ -440,6 +533,16 @@ export default {
 
   .sticker-price {
     font-size: 0.65rem;
+  }
+
+  .sticker-wear {
+    font-size: 0.6rem;
+  }
+
+  .stickers-total {
+    font-size: 0.7rem;
+    margin-top: 4px;
+    margin-left: 0;
   }
 }
 </style>

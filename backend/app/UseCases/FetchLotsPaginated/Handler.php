@@ -16,10 +16,10 @@ readonly class Handler
     {
         $pagination = $this->lotRepository->getPaginate(PaginateDTO::from($dataInput));
 
-        $additionalStickersData = $this->lotRepository->getLotsWithStickers($pagination->pluck('d'));
+        $additionalStickersData = $this->lotRepository->getLotsWithStickers($pagination->pluck('a'));
 
         $pagination->map(function (Lot $lot) use ($additionalStickersData) {
-            $stickers = $additionalStickersData->firstWhere('d', $lot->d);
+            $stickers = $additionalStickersData->firstWhere('a', $lot->a);
 
             $lot->stickers = $stickers?->stickers ?? $lot->stickers;
             $lot->stickers_price = (float) $stickers?->stickers_price ?? 0;
