@@ -106,7 +106,7 @@ class SteamHTTPClient
      * @throws ConnectionException
      */
     public function getSkinLots(
-        string $skinId,
+        string $uri,
         int $offset = 0,
         int $batchSize = 100,
         ?string $proxy = null,
@@ -116,7 +116,7 @@ class SteamHTTPClient
     ): array {
         return $this->makeRequest(
             method: 'GET',
-            uri: self::URI_MARKET_LISTING_720.$skinId.'/render/',
+            uri: self::URI_MARKET_LISTING_720.$uri.'/render/',
             queryParameters: [
                 'start' => $offset,
                 'count' => $batchSize,

@@ -11,12 +11,12 @@ use Spatie\LaravelData\Mappers\SnakeCaseMapper;
 class DataInput extends Data
 {
     public function __construct(
-        public readonly string $market_hash_name,
-        public readonly string $market_name,
-        public readonly string $icon,
-        public readonly Extremum $extremum,
-        public readonly float $floatLimit,
+        public readonly string $name,
         public readonly float $maxPrice,
         public readonly bool $isActive = true,
+        public readonly float|null $floatLimit = null,
+        public readonly Extremum|null $extremum = null,
+        public readonly float|null $min_stickers_price = null,
+        public readonly float|null $min_keychains_price = null,
     ){}
 }

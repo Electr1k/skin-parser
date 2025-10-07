@@ -33,7 +33,7 @@ class Price extends Model
     public function price(): Attribute
     {
         return new Attribute(
-            get: fn() => $this->last_24h ?? $this->last_7d ?? $this->last_30d ?? $this->last_90d ?? $this->last_ever ?? 0
+            get: fn() => round($this->last_24h ?? $this->last_7d ?? $this->last_30d ?? $this->last_90d ?? $this->last_ever ?? 0, 2)
         );
     }
 }

@@ -7,7 +7,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * Найден лот с редким float
+ * Найден редкий float
  */
 class LotIsRare
 {

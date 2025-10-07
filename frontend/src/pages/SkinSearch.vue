@@ -86,7 +86,7 @@ export default {
     },
     async updateItem(updatedItem) {
       try {
-        await $api.skinSearch.update(updatedItem.id, updatedItem)
+        await $api.skinSearch.update(updatedItem.name, updatedItem)
       }
       catch (exception){
         this.$toast.error(exception.message);

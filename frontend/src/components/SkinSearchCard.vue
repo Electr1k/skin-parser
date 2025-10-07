@@ -32,11 +32,11 @@
           </div>
 
           <div class="indicator">
-            <span class="indicator-label">Float:</span>
+            <span class="indicator-label" v-if="item.float_limit">Float:</span>
             <strong class="indicator-value limit">{{ item.float_limit }}</strong>
           </div>
 
-          <div class="indicator">
+          <div class="indicator" v-if="item.extremum">
             <span class="indicator-label">Направление:</span>
             <strong class="indicator-value extremum">{{ item.extremum }}</strong>
           </div>

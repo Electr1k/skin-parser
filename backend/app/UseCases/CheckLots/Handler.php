@@ -34,7 +34,7 @@ class Handler
 
         do{
             $response = $this->steamHTTPClient->getSkinLots(
-                $data->skin->id,
+                $data->skin->uri,
                 $offset,
                 $this->batchSize,
                 $this->proxy
@@ -75,7 +75,7 @@ class Handler
                 }
 
                 // TODO: подумать если стикеры изменятся
-                if (in_array($lot->a, $lotIdsForCheck) && $lot->stickersPrice() > 0.5) {
+                if (in_array($lot->a, $lotIdsForCheck) && $lot->stickersPrice() > 4) {
                     event(new LotIsRare($lot));
                 }
             }

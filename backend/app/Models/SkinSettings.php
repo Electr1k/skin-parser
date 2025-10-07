@@ -35,6 +35,9 @@ class SkinSettings extends Model
     use HasCustomBuilder;
 
     protected $table = 'skin_settings';
+
+    protected $primaryKey = 'name';
+
     public $incrementing = false;
 
     protected $keyType = 'string';
@@ -42,6 +45,7 @@ class SkinSettings extends Model
 
     protected $casts = [
         'extremum' => Extremum::class,
+        'max_price' => 'float',
         'float_limit' => 'float',
         'min_stickers_price' => 'float',
         'min_keychains_price' => 'float',
@@ -51,7 +55,7 @@ class SkinSettings extends Model
     public function uri(): Attribute
     {
         return new Attribute(
-            get: fn (SkinSettings $settings) => rawurlencode($this->name),
+            get: fn () => rawurlencode($this->name),
         );
     }
 

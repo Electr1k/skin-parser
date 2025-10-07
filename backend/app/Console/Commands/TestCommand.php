@@ -33,9 +33,7 @@ class TestCommand extends Command
      */
     public function handle(Handler $handler): int
     {
-        $dataInput = new DataInput(perPage: 1000, );
-        $data = $handler->handle($dataInput);
-        dd($data->whereNotNull('stickers')->where('stickers', '!=', [])->toArray());
+        event(new LotIsRare(Lot::query()->first()));
         return self::SUCCESS;
     }
 }

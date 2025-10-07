@@ -62,6 +62,7 @@ class SkinSettingsController extends Controller
     public function update(SkinSettings $skinSettings, UpdateHandler $handler, SkinSettingsUpdateRequest $request): SkinSettingsResource
     {
         $handler->handle(UpdateDataInput::from([...$skinSettings->toArray(), ...$request->validated()]));
+
         return new SkinSettingsResource($skinSettings->fresh());
     }
 }

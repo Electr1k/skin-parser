@@ -8,6 +8,6 @@ readonly class Handler
 {
     public function handle(DataInput $dataInput): SkinSettings
     {
-        return SkinSettings::query()->create([...$dataInput->toArray(), 'id' => rawurlencode($dataInput->market_hash_name)]);
+        return SkinSettings::query()->create($dataInput->toArray());
     }
 }

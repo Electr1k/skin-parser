@@ -10,7 +10,7 @@ readonly class Handler
     public function handle(DataInput $dataInput): bool
     {
         return SkinSettings::query()
-            ->findOrFail($dataInput->id)
+            ->findOrFail($dataInput->name)
             ->update($dataInput->toArray());
     }
 }

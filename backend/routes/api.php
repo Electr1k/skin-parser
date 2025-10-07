@@ -12,7 +12,7 @@ Route::prefix('v1')->group(function () {
 
         Route::get('/find-skins', [SkinSettingsController::class, 'findSkins']);
         Route::post('/', [SkinSettingsController::class, 'store']);
-        Route::put('/{skin_settings}', [SkinSettingsController::class, 'update']);
+        Route::put('/{skinSettings:name}', [SkinSettingsController::class, 'update']);
     });
     Route::prefix('lots')->group(function () {
         Route::get('/', [LotsController::class, 'index']);

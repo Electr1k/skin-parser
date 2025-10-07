@@ -38,8 +38,8 @@
                     class="input-field"
                     placeholder="Введите цену..."
                 />
-                <div v-if="editedItem.max_price || editedItem.extremum || editedItem.min_stickers_price || editedItem.min_keychains_price"
-                     class="error-text">Поле обязательно</div>
+                <div v-if="!editedItem.max_price && (editedItem.max_price || editedItem.extremum
+                      || editedItem.min_stickers_price || editedItem.min_keychains_price)" class="error-text">Поле обязательно</div>
               </div>
 
               <div class="input-group">
