@@ -20,7 +20,7 @@ class CheckLotsJob implements ShouldQueue, ShouldBeUniqueUntilProcessing
 
     public function uniqueId(): string
     {
-        return $this->searchSettings->id;
+        return $this->searchSettings->uri;
     }
 
 
