@@ -70,13 +70,16 @@ export default {
     },
     openDialog(item) {
       this.editedItem = {
-          name: item.market_hash_name,
-          icon: item.icon,
-          float_limit: item.max_price,
-          max_price: item.max_price,
-          extremum: item.extremum,
-          is_active: item.is_active,
-          price: item.price
+        name: item.name,
+        ru_name: item.ru_name,
+        max_price: item.max_price,
+        price: item.price,
+        is_active: item.is_active,
+        float_limit: item.float_limit,
+        extremum: item.extremum,
+        min_stickers_price: item.min_stickers_price,
+        min_keychains_price: item.min_keychains_price,
+        icon: item.icon,
       };
       this.dialogMode = 'update';
       this.dialog = true;

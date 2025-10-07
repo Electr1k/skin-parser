@@ -29,49 +29,74 @@
               </div>
             </div>
 
-            <!-- Основные настройки -->
             <div class="settings-section">
               <div class="input-group">
-                <label class="input-label">Предельное значение float</label>
-                <input
-                    type="number"
-                    v-model.number="editedItem.float_limit"
-                    class="input-field"
-                    placeholder="Введите значение..."
-                    step="0.0001"
-                />
-                <div v-if="!editedItem.float_limit" class="error-text">Поле обязательно</div>
-              </div>
-
-              <div class="input-group">
-                <label class="input-label">Максимальная цена (руб)</label>
+                <label class="input-label">Макс. цена (руб)</label>
                 <input
                     type="number"
                     v-model.number="editedItem.max_price"
                     class="input-field"
                     placeholder="Введите цену..."
                 />
-                <div v-if="!editedItem.max_price" class="error-text">Поле обязательно</div>
+                <div v-if="editedItem.max_price || editedItem.extremum || editedItem.min_stickers_price || editedItem.min_keychains_price"
+                     class="error-text">Поле обязательно</div>
+              </div>
+
+              <div class="input-group">
+                <label class="input-label">Float</label>
+                <input
+                    type="number"
+                    v-model.number="editedItem.float_limit"
+                    class="input-field"
+                    placeholder="Введите значение..."
+                    step="0.001"
+                />
+                <div v-if="!editedItem.float_limit && editedItem.extremum" class="error-text">Поле обязательно</div>
               </div>
             </div>
 
-            <!-- Дополнительные настройки -->
             <div class="settings-section">
-              <div class="input-group">
-                <label class="input-label">Направление поиска float</label>
-                <select v-model="editedItem.extremum" class="input-field select-field">
-                  <option value="MIN">MIN</option>
-                  <option value="MAX">MAX</option>
-                </select>
-                <div v-if="!editedItem.extremum" class="error-text">Поле обязательно</div>
-              </div>
-
-              <div class="switch-group mt-6">
+              <div class="switch-group mt-7">
                 <label class="switch">
                   <input type="checkbox" v-model="editedItem.is_active" class="switch-input">
                   <span class="switch-slider"></span>
                 </label>
-                <span class="switch-label">Активен</span>
+                <span class="input-label">Активен</span>
+              </div>
+
+              <div class="input-group">
+                <label class="input-label">Направление поиска</label>
+                <select v-model="editedItem.extremum" class="input-field select-field">
+                  <option value="MIN">MIN</option>
+                  <option value="MAX">MAX</option>
+                  <option :value="null"></option>
+                </select>
+                <div v-if="!editedItem.extremum && editedItem.float_limit" class="error-text">Поле обязательно</div>
+              </div>
+            </div>
+
+            <!-- Новый третий столбец -->
+            <div class="settings-section">
+              <div class="input-group">
+                <label class="input-label">Мин. цена стикеров, $</label>
+                <input
+                    type="number"
+                    v-model.number="editedItem.min_stickers_price"
+                    class="input-field"
+                    placeholder="Введите цену..."
+                    step="0.01"
+                />
+              </div>
+
+              <div class="input-group">
+                <label class="input-label">Мин. цена брелков, $</label>
+                <input
+                    type="number"
+                    v-model.number="editedItem.min_keychains_price"
+                    class="input-field"
+                    placeholder="Введите цену..."
+                    step="0.01"
+                />
               </div>
             </div>
           </div>
@@ -135,17 +160,16 @@ export default {
   computed: {
     isFormValid() {
       const requiredFields = [
-        'float_limit',
         'max_price',
-        'extremum',
         'name',
         'icon'
       ];
 
       return requiredFields.every(field => {
-        const value = this.editedItem[field];
-        return value !== undefined && value !== null && value !== '';
-      });
+            const value = this.editedItem[field];
+            return value !== undefined && value !== null && value !== '';
+          }) &&
+          (this.editedItem['max_float'] && this.editedItem['extremum'] || this.editedItem['min_stickers_price'] || this.editedItem['min_keychains_price']);
     }
   },
   watch: {
@@ -197,7 +221,7 @@ export default {
   border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
   width: 100%;
-  max-width: 700px;
+  max-width: 800px; /* Увеличил максимальную ширину */
   max-height: 90vh;
   overflow-y: auto;
 }
@@ -226,7 +250,7 @@ export default {
 
 .form-row {
   display: grid;
-  grid-template-columns: 120px 1fr 1fr;
+  grid-template-columns: 120px 1fr 1fr 1fr; /* Добавил четвертый столбец */
   gap: 20px;
   align-items: start;
 }
@@ -331,8 +355,8 @@ export default {
   display: flex;
   align-items: center;
   gap: 10px;
-  height: 42px; /* Высота соответствует полю ввода */
-  margin-top: 0; /* Убираем отступ */
+  height: 42px;
+  margin-top: 0;
 }
 
 .switch {
@@ -443,6 +467,13 @@ export default {
 }
 
 /* Адаптивность */
+@media (max-width: 968px) {
+  .form-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+}
+
 @media (max-width: 768px) {
   .form-row {
     grid-template-columns: 1fr;

@@ -5,27 +5,35 @@
   >
     <div class="card-content">
       <!-- Изображение предмета -->
-      <div class="item-image-wrapper">
-        <img
-            :src="item.icon"
-            :alt="item.market_name"
-            class="item-image"
-        />
+      <div>
+        <div class="image-section">
+          <div class="item-image-wrapper">
+            <img
+                :src="item.icon"
+                class="item-image"
+            />
+          </div>
+        </div>
       </div>
 
       <!-- Информация о предмете -->
       <div class="item-info">
-        <div class="item-name">{{ item.market_name }}</div>
+        <div class="item-name">{{ item.ru_name }}</div>
 
         <div class="indicators">
-          <div class="indicator">
-            <span class="indicator-label">Предельный:</span>
-            <strong class="indicator-value limit">{{ item.float_limit }}</strong>
+          <div class="indicator" v-if="item.price">
+            <span class="indicator-label">Цена:</span>
+            <strong class="indicator-value current-price">${{ item.price }}</strong>
           </div>
 
           <div class="indicator">
-            <span class="indicator-label">Максимальная цена:</span>
-            <strong class="indicator-value max-price">{{ item.max_price }} ₽</strong> <!-- Рубли -->
+            <span class="indicator-label">Макс. цена:</span>
+            <strong class="indicator-value max-price">{{ item.max_price }} ₽</strong>
+          </div>
+
+          <div class="indicator">
+            <span class="indicator-label">Float:</span>
+            <strong class="indicator-value limit">{{ item.float_limit }}</strong>
           </div>
 
           <div class="indicator">
@@ -33,9 +41,14 @@
             <strong class="indicator-value extremum">{{ item.extremum }}</strong>
           </div>
 
-          <div class="indicator" v-if="item.price">
-            <span class="indicator-label">Текущая цена:</span>
-            <strong class="indicator-value current-price">${{ item.price }}</strong>
+          <div class="indicator" v-if="item.min_stickers_price">
+            <span class="indicator-label">Мин. цена стикеров:</span>
+            <strong class="indicator-value current-price">${{ item.min_stickers_price }}</strong>
+          </div>
+
+          <div class="indicator" v-if="item.min_keychains_price">
+            <span class="indicator-label">Мин. цена брелков:</span>
+            <strong class="indicator-value current-price">${{ item.min_keychains_price }}</strong>
           </div>
         </div>
       </div>
@@ -206,6 +219,13 @@ export default {
   font-weight: 500;
   color: #6b7280;
 }
+
+.image-section {
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+
 
 /* Адаптивность */
 @media (max-width: 768px) {
