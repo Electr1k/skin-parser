@@ -9,6 +9,7 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('app:dispatch-check-lots')->everyFiveMinutes();
+Schedule::command('app:import-skins')->dailyAt('00:20');
 Schedule::command('app:import-stickers')->dailyAt('00:30');
 Schedule::command('app:import-highlights')->dailyAt('00:30');
 Schedule::command('app:import-keychains')->dailyAt('00:35');
