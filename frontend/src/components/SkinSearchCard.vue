@@ -25,12 +25,17 @@
 
           <div class="indicator">
             <span class="indicator-label">Максимальная цена:</span>
-            <strong class="indicator-value max-price">{{ item.max_price }}</strong>
+            <strong class="indicator-value max-price">{{ item.max_price }} ₽</strong> <!-- Рубли -->
           </div>
 
           <div class="indicator">
             <span class="indicator-label">Направление:</span>
             <strong class="indicator-value extremum">{{ item.extremum }}</strong>
+          </div>
+
+          <div class="indicator" v-if="item.price">
+            <span class="indicator-label">Текущая цена:</span>
+            <strong class="indicator-value current-price">${{ item.price }}</strong>
           </div>
         </div>
       </div>
@@ -107,6 +112,7 @@ export default {
   overflow: hidden;
   background: #f8f9fa;
   border: 1px solid #e9ecef;
+  position: relative;
 }
 
 .item-image {
@@ -161,6 +167,10 @@ export default {
 
 .indicator-value.extremum {
   color: #f57c00;
+}
+
+.indicator-value.current-price {
+  color: #10b981;
 }
 
 .status-indicator {

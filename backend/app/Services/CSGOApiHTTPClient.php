@@ -5,6 +5,8 @@ namespace App\Services;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
+use JsonMachine\Exception\InvalidArgumentException;
+use JsonMachine\Items;
 use RuntimeException;
 
 
@@ -26,7 +28,7 @@ class CSGOApiHTTPClient
 
     protected const string KEYCHAINS = self::CSGO_API.'/en/keychains.json';
 
-    protected const string SKINS = self::CSGO_API.'/en/skins.json';
+    protected const string SKINS = self::CSGO_API.'/ru/skins_not_grouped.json';
 
     protected const string ITEMS_GAME = self::CS_FILE_TRACKER.'/items_game.json';
 
@@ -117,15 +119,37 @@ class CSGOApiHTTPClient
     }
 
     /**
-     * @throws RequestException
+     * @return \Generator
      * @throws ConnectionException
+     * @throws RequestException
+     * @throws InvalidArgumentException
      */
-    public function getSkins(): array
+    public function getSkins(): \Generator
     {
-        return $this->makeRequest(
-            method: 'GET',
-            uri: self::SKINS,
-        );
+        $tempFile = storage_path('app/temp_skins_' . uniqid() . '.json');
+
+        try {
+            Http::baseUrl($this->host)
+                ->timeout(120)
+                ->withOptions([
+                    'sink' => $tempFile
+                ])
+                ->send('GET', self::SKINS)
+                ->throw();
+
+            $skins = Items::fromFile($tempFile, [
+                'debug' => true,
+            ]);
+
+            foreach ($skins as $skin) {
+                yield $skin;
+            }
+
+        } finally {
+            if (file_exists($tempFile)) {
+                unlink($tempFile);
+            }
+        }
     }
 }
 

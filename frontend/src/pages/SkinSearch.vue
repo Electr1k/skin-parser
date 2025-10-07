@@ -7,6 +7,7 @@
         @add-click="handleAddClick"
         @item-selected="handleItemSelected"
         @search-focus="handleSearchFocus"
+        @search-input="handleSearchInput"
     />
 
     <v-row>
@@ -50,6 +51,7 @@ export default {
       skins: [],
       searchQuery: '',
       showDropdown: false,
+      searchTimeout: null
     };
   },
   async created() {
@@ -67,7 +69,15 @@ export default {
       }
     },
     openDialog(item) {
-      this.editedItem = { ...item };
+      this.editedItem = {
+          name: item.market_hash_name,
+          icon: item.icon,
+          float_limit: item.max_price,
+          max_price: item.max_price,
+          extremum: item.extremum,
+          is_active: item.is_active,
+          price: item.price
+      };
       this.dialogMode = 'update';
       this.dialog = true;
     },
@@ -89,11 +99,27 @@ export default {
       }
       await this.getSkinSettings()
     },
-    async handleAddClick(query) {
+
+    async handleSearchInput(query) {
+      if (this.searchTimeout) {
+        clearTimeout(this.searchTimeout);
+      }
+
+      this.searchTimeout = setTimeout(async () => {
+        if (query.trim()) {
+          await this.performSearch(query);
+        } else {
+          this.skins = [];
+          this.showDropdown = false;
+        }
+      }, 300);
+    },
+
+    async performSearch(query) {
       try {
         const response = await $api.skinSearch.findSkins(query);
-          this.skins = response.data.data
-          this.showDropdown = true;
+        this.skins = response.data.data;
+        this.showDropdown = this.skins.length > 0;
       } catch (error) {
         this.$toast.error(error.message);
         this.skins = [];
@@ -101,15 +127,21 @@ export default {
       }
     },
 
+    handleAddClick(query) {
+      if (query.trim()) {
+        this.performSearch(query);
+      }
+    },
+
     handleItemSelected(item) {
       this.editedItem = {
-        market_name: item.market_name,
-        market_hash_name: item.market_hash_name,
-        icon: item.icon_url,
+        name: item.name,
+        icon: item.icon,
         float_limit: null,
         max_price: null,
         extremum: null,
-        is_active: true
+        is_active: true,
+        price: item.price
       };
       this.dialogMode = 'create';
       this.dialog = true;

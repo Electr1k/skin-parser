@@ -16,10 +16,9 @@ class SkinRepository implements SkinInterface
     {
         return Skin::query()
             ->filter(FilterDTO::from($dto))
-            ->joinWearsAndPrices()
+            ->joinPrices()
             ->select([
-                DB::raw("CONCAT(skins.name, ' (', wears.name, ')') as name"),
-                'skins.icon',
+                'skins.*',
                 DB::raw('COALESCE(prices.last_24h, prices.last_7d, prices.last_30d, prices.last_90d, 0) as price'),
             ])
             ->get();

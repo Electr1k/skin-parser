@@ -21,7 +21,8 @@ class SkinSettingsResource extends JsonResource
             'extremum' => $this->extremum->value,
             'float_limit' => $this->float_limit,
             'max_price' => $this->max_price,
-            'is_active' => $this->is_active
+            'is_active' => $this->is_active,
+            'price' => 0.01
         ];
     }
 }

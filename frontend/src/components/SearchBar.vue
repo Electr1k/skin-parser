@@ -21,13 +21,16 @@
       <!-- Выпадающий список -->
       <div v-if="showDropdown && items.length > 0" class="dropdown">
         <div
-            v-for="item in items"
-            :key="item.id"
+            v-for="(item, index) in items"
+            :key="index"
             class="dropdown-item"
             @click="selectItem(item)"
         >
-          <img :src="item.icon_url" :alt="item.market_name" class="item-image" />
-          <span class="item-name">{{ item.market_name }}</span>
+          <img :src="item.icon" :alt="item.ru_name" class="item-image" />
+          <div class="item-info">
+            <span class="item-name">{{ item.ru_name }}</span> <!-- Используем ru_name -->
+            <span class="item-price">${{ item.price }}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -77,7 +80,7 @@ export default {
     },
     handleClickOutside(event) {
       if (!this.$el.contains(event.target)) {
-        this.$emit('update:showDropdown', false) // используем правильное имя пропа
+        this.$emit('update:showDropdown', false)
       }
     }
   },
@@ -94,6 +97,7 @@ export default {
 </script>
 
 <style scoped>
+/* Стили остаются без изменений */
 .search-container {
   width: 100%;
   max-width: 600px;
@@ -211,10 +215,23 @@ export default {
   border: 1px solid #e5e7eb;
 }
 
+.item-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
 .item-name {
   font-size: 14px;
   font-weight: 500;
   color: #374151;
+  margin-bottom: 4px;
+}
+
+.item-price {
+  font-size: 12px;
+  color: #10b981;
+  font-weight: 600;
 }
 
 /* Адаптивность */

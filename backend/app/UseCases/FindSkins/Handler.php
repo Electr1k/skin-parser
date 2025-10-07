@@ -16,7 +16,6 @@ readonly class Handler
 
     public function handle(DataInput $dataInput): Collection
     {
-
         return $this->repository->getAll(AllDTO::from($dataInput));
     }
 }

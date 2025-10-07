@@ -13,14 +13,19 @@
         <div class="form-section">
           <div class="form-row">
             <!-- Изображение предмета -->
-            <div class="image-section">
-              <div class="image-wrapper">
-                <img
-                    :src="editedItem.icon"
-                    :alt="editedItem.market_name"
-                    class="item-image"
-                    @error="handleImageError"
-                />
+            <div>
+              <div class="image-section">
+                <div class="image-wrapper">
+                  <img
+                      :src="editedItem.icon"
+                      :alt="editedItem.name"
+                      class="item-image"
+                      @error="handleImageError"
+                  />
+                </div>
+              </div>
+              <div v-if="editedItem.price" class="current-price-badge">
+                ${{ editedItem.price }}
               </div>
             </div>
 
@@ -33,12 +38,13 @@
                     v-model.number="editedItem.float_limit"
                     class="input-field"
                     placeholder="Введите значение..."
+                    step="0.0001"
                 />
                 <div v-if="!editedItem.float_limit" class="error-text">Поле обязательно</div>
               </div>
 
               <div class="input-group">
-                <label class="input-label">Максимальная цена</label>
+                <label class="input-label">Максимальная цена (руб)</label>
                 <input
                     type="number"
                     v-model.number="editedItem.max_price"
@@ -60,7 +66,7 @@
                 <div v-if="!editedItem.extremum" class="error-text">Поле обязательно</div>
               </div>
 
-              <div class="switch-group">
+              <div class="switch-group mt-6">
                 <label class="switch">
                   <input type="checkbox" v-model="editedItem.is_active" class="switch-input">
                   <span class="switch-slider"></span>
@@ -73,37 +79,14 @@
           <!-- Детальная информация -->
           <div class="detail-section">
             <div class="input-group full-width">
-              <label class="input-label">Название</label>
+              <label class="input-label">Название предмета</label>
               <input
                   type="text"
-                  v-model="editedItem.market_name"
+                  v-model="editedItem.name"
                   class="input-field"
                   placeholder="Введите название предмета..."
               />
-              <div v-if="!editedItem.market_name" class="error-text">Поле обязательно</div>
-            </div>
-
-            <div class="input-group full-width">
-              <label class="input-label">Name</label>
-              <input
-                  type="text"
-                  v-model="editedItem.market_hash_name"
-                  class="input-field"
-                  placeholder="Введите market hash name..."
-              />
-              <div v-if="!editedItem.market_hash_name" class="error-text">Поле обязательно</div>
-            </div>
-
-            <div class="input-group full-width">
-              <label class="input-label">ID</label>
-              <input
-                  type="text"
-                  v-model="editedItem.id"
-                  class="input-field"
-                  :disabled="mode === 'create'"
-                  placeholder="ID предмета..."
-              />
-              <div v-if="mode === 'update' && !editedItem.id" class="error-text">Поле обязательно</div>
+              <div v-if="!editedItem.name" class="error-text">Поле обязательно</div>
             </div>
 
             <div class="input-group full-width">
@@ -155,14 +138,9 @@ export default {
         'float_limit',
         'max_price',
         'extremum',
-        'market_name',
-        'market_hash_name',
+        'name',
         'icon'
       ];
-
-      if (this.mode === 'update') {
-        requiredFields.push('id');
-      }
 
       return requiredFields.every(field => {
         const value = this.editedItem[field];
@@ -256,6 +234,7 @@ export default {
 .image-section {
   display: flex;
   justify-content: center;
+  position: relative;
 }
 
 .image-wrapper {
@@ -268,12 +247,21 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 
 .item-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.current-price-badge {
+  color: green;
+  font-size: 16px;
+  font-weight: 800;
+  text-align: center;
+  padding-top: 12px;
 }
 
 .settings-section {
@@ -343,7 +331,8 @@ export default {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-top: 8px;
+  height: 42px; /* Высота соответствует полю ввода */
+  margin-top: 0; /* Убираем отступ */
 }
 
 .switch {
@@ -381,7 +370,7 @@ export default {
   background-color: white;
   transition: .4s;
   border-radius: 50%;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .switch-input:checked + .switch-slider {

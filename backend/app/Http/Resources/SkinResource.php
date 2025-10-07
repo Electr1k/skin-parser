@@ -9,6 +9,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @mixin JsonResource
  * @property string $icon
  * @property string $name
+ * @property string $ru_name
  * @property float $price
  */
 class SkinResource extends JsonResource
@@ -18,6 +19,7 @@ class SkinResource extends JsonResource
         return [
             'icon' => $this->icon,
             'name' => $this->name,
+            'ru_name' => $this->ru_name,
             'price' => round($this->price, 2),
         ];
     }

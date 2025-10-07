@@ -18,7 +18,11 @@ return new class extends Migration
 
             $table->string('name')
                 ->primary()
-                ->comment('Название скина');
+                ->comment('Название скина на латинице');
+
+            $table->string('ru_name')
+                ->index()
+                ->comment('Название скина на кириллице');
 
             $table->float('min_float')
                 ->nullable()
