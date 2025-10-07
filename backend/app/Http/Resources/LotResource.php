@@ -22,12 +22,12 @@ class LotResource extends JsonResource
     {
         return [
             'icon' => $this->icon,
-            'market_name' => $this->market_name,
+            'name' => $this->ru_name,
             'float' => $this->float,
             'price' => $this->price,
             'page' => $this->page,
             'found_at' => $this->founded_at,
-            'stickers' => StickerOnSkinResource::collection($this->stickers),
+            'stickers' => $this->stickers ? StickerOnSkinResource::collection($this->stickers) : [],
             'stickers_price' => $this->stickers_price,
             'is_rare_float' => $this->is_rare_float,
             'inspect_link' => $this->inspect_link,

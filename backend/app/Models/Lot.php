@@ -47,7 +47,7 @@ class Lot extends Model
 
     public function skinSettings(): BelongsTo
     {
-        return $this->belongsTo(SkinSettings::class, 'skin_id');
+        return $this->belongsTo(SkinSettings::class, 'skin_id', 'name');
     }
 
     public function history(): HasMany

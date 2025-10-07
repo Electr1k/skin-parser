@@ -2,7 +2,7 @@
   <div v-if="open" class="dialog-overlay" @click="close">
     <div class="dialog-card" @click.stop>
       <div class="dialog-header">
-        <h2 class="dialog-title">{{ skin.market_name }}</h2>
+        <h2 class="dialog-title">{{ skin.name }}</h2>
         <button class="close-button" @click="close">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
             <path d="M15 5L5 15M5 5l10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -13,7 +13,7 @@
       <div class="dialog-content">
         <div class="skin-main-info">
           <div class="skin-image-large">
-            <img :src="skin.icon" :alt="skin.market_name" class="skin-image" />
+            <img :src="skin.icon" :alt="skin.name" class="skin-image" />
           </div>
 
           <div class="skin-details">

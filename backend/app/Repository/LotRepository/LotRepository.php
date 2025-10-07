@@ -25,8 +25,10 @@ class LotRepository implements LotInterface
     {
         $isRareFloatSql = "float IS NOT NULL AND skin_settings.extremum = '" . Extremum::MIN->value . "' AND float < float_limit
                         OR float IS NOT NULL AND skin_settings.extremum = '" . Extremum::MAX->value . "' AND float > float_limit";
+
         $query = Lot::query()
-            ->leftJoin('skin_settings', 'skin_settings.id', '=', 'lots.skin_id')
+            ->leftJoin('skin_settings', 'skin_settings.name', '=', 'lots.skin_id')
+            ->leftJoin('skins', 'skins.name', '=', 'lots.skin_id')
             ->select([
                 '*',
                 DB::raw("lots.created_at as founded_at"),
@@ -37,10 +39,10 @@ class LotRepository implements LotInterface
         $dto->sortBy !== LotsSortable::DATE ? $query->orderBy($dto->sortBy->value) : $query->orderByDesc('lots.created_at');
         $dto->isRareFloat && $query->whereRaw("$isRareFloatSql");
 
-        $paginator = $query->whereNotNull('stickers')->paginate(perPage: $dto->perPage, page: $dto->page);
+        $paginator = $query->paginate(perPage: $dto->perPage, page: $dto->page);
 
         $rareCountQuery = Lot::query()
-            ->leftJoin('skin_settings', 'skin_settings.id', '=', 'lots.skin_id')
+            ->leftJoin('skin_settings', 'skin_settings.name', '=', 'lots.skin_id')
             ->whereRaw($isRareFloatSql);
 
         $dto->skinId && $rareCountQuery->whereSkinId($dto->skinId);

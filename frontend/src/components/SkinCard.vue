@@ -9,7 +9,7 @@
       <div class="skin-image-wrapper">
         <img
             :src="skin.icon"
-            :alt="skin.market_name"
+            :alt="skin.name"
             class="skin-image"
         />
         <div v-if="skin.is_rare_float" class="rare-indicator">
@@ -22,7 +22,7 @@
 
     <!-- Основная информация -->
     <div class="skin-info" ref="infoSection">
-      <h3 class="skin-name">{{ skin.market_name }}</h3>
+      <h3 class="skin-name">{{ skin.name }}</h3>
 
       <div class="skin-meta">
         <div class="meta-item">
