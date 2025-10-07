@@ -62,7 +62,7 @@ class Handler
                 $lot = $this->lotService->createOrUpdateLot(
                     LotStoreDTO::from([
                         ...$lot,
-                        'skin_id' => $data->skin->id,
+                        'skin_id' => $data->skin->name,
                         'page' => intdiv($offset, $this->batchSize) + 1,
                     ])
                 );

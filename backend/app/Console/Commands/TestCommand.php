@@ -33,7 +33,10 @@ class TestCommand extends Command
      */
     public function handle(Handler $handler): int
     {
-        event(new LotIsRare(Lot::query()->first()));
+        $settings = SkinSettings::query()->first();
+
+        CheckLotsJob::dispatch($settings)->onQueue('aboba');
+
         return self::SUCCESS;
     }
 }
