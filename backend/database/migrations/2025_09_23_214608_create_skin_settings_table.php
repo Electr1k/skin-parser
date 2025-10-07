@@ -3,6 +3,7 @@
 use App\Enums\Extremum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -17,31 +18,9 @@ return new class extends Migration
         Schema::create(self::TABLE_NAME, function (Blueprint $table) {
             $table->comment('Таблица с параметрами скинов для поиска');
 
-            $table->string('id')
+            $table->string('name')
                 ->primary()
-                ->comment('Идентификатор (slug) скина для поиска');
-
-            $table->string('market_hash_name')
-                ->unique()
-                ->comment('Название скина на латинице');
-
-            $table
-                ->string('market_name')
-                ->unique()
-                ->comment('Название скина на кириллице');
-
-            $table
-                ->string('icon')
-                ->comment('Иконка скина')
-                ->nullable();
-
-            $table
-                ->enum('extremum', Extremum::cases())
-                ->comment('Предел, к которому стримится float (MIN, MAX)');
-
-            $table
-                ->float('float_limit')
-                ->comment('Пороговое значение float');
+                ->comment('Название скина для поиска');
 
             $table
                 ->float('max_price')
@@ -52,8 +31,49 @@ return new class extends Migration
                 ->default(true)
                 ->comment('Активен ли поиск');
 
+            $table
+                ->float('float_limit')
+                ->nullable()
+                ->comment('Пороговое значение float');
+
+            $table
+                ->enum('extremum', Extremum::cases())
+                ->nullable()
+                ->comment('Предел, к которому стримится float (MIN, MAX)');
+
+            $table
+                ->float('min_stickers_price')
+                ->nullable()
+                ->comment('Минимальная стоимость стикеров');
+
+            $table
+                ->float('min_keychains_price')
+                ->nullable()
+                ->comment('Минимальная стоимость брелков');
+
             $table->timestamps();
         });
+
+        // Если установлен float_limit, то extremum IS NOT NULL
+        DB::statement("
+            ALTER TABLE " . self::TABLE_NAME . "
+            ADD CONSTRAINT float_limit_extremum_consistency_check
+            CHECK (
+                (float_limit IS NULL AND extremum IS NULL) OR
+                (float_limit IS NOT NULL AND extremum IS NOT NULL)
+            )
+        ");
+
+        // Установлена хотя бы одна проверка
+        DB::statement("
+            ALTER TABLE " . self::TABLE_NAME . "
+            ADD CONSTRAINT at_least_one_search_condition_check
+            CHECK (
+                (float_limit IS NOT NULL AND extremum IS NOT NULL) OR
+                min_stickers_price IS NOT NULL OR
+                min_keychains_price IS NOT NULL
+            )
+        ");
     }
 
     /**

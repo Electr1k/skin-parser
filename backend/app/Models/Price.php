@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Builders\Price\PriceBuilder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -12,15 +14,26 @@ use Illuminate\Database\Eloquent\Model;
  * @property float|null $last_30d - Медианная цена за 30д в Steam'
  * @property float|null $last_90d - Медианная цена за 90д в Steam'
  * @property float|null $last_ever - Медианная цена за все время в Steam'
+ *
+ * @property float $price - Текущая цена
+ * @method static PriceBuilder query()
  */
 class Price extends Model
 {
-    protected $primaryKey = 'name';
+    use HasCustomBuilder;
 
+    protected $primaryKey = 'name';
 
     protected $keyType = 'string';
 
     public $incrementing = false;
 
     protected $guarded = false;
+
+    public function price(): Attribute
+    {
+        return new Attribute(
+            get: fn() => $this->last_24h ?? $this->last_7d ?? $this->last_30d ?? $this->last_90d ?? $this->last_ever ?? 0
+        );
+    }
 }
