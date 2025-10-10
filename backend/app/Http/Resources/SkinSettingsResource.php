@@ -14,7 +14,7 @@ class SkinSettingsResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'name' => $this->name,
+            'name' => $this->name ?? $this->keychain->name,
             'ru_name' => $this->skin->ru_name,
             'max_price' => $this->max_price,
             'price' => $this->price->price,

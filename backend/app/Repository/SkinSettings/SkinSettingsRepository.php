@@ -30,7 +30,7 @@ class SkinSettingsRepository implements SkinSettingsInterface
     {
         return SkinSettings::query()
             ->filter(FilterDTO::from($dto))
-            ->with(['skin', 'price'])
+            ->with(['skin', 'keychain', 'price'])
             ->orderBy('created_at', 'desc')
             ->paginate(
                 perPage: $dto->perPage,

@@ -25,6 +25,7 @@ use Illuminate\Support\Collection;
  * @property string $uri - Относительная ссылка на скина в Steam
  * @property float $currentPrice - Текущая цена в Steam
  * @property Skin $skin
+ * @property Keychain $keychain
  * @property Collection<Lot> $lots
  * @property Price $price
  * @method static SkinSettingsBuilder query()
@@ -78,5 +79,13 @@ class SkinSettings extends Model
     public function skin(): HasOne
     {
         return $this->hasOne(Skin::class, 'name', 'name');
+    }
+
+    /**
+     * @return HasOne<Skin>
+     */
+    public function keychain(): HasOne
+    {
+        return $this->hasOne(Keychain::class, 'name', 'name');
     }
 }

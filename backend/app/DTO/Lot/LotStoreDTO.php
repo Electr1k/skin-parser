@@ -23,6 +23,7 @@ class LotStoreDTO extends Data
         #[MapInputName('floatvalue')]
         public readonly float|Optional $float = new Optional,
         public readonly array|Optional $stickers = new Optional,
+        public readonly array|Optional $keychains = new Optional,
         #[MapInputName('customname')]
         public readonly string|Optional $customName = new Optional,
     )
