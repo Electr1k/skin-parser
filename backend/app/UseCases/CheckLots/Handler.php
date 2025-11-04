@@ -78,6 +78,8 @@ class Handler
                 if (in_array($lot->a, $lotIdsForCheck) && $lot->stickersPrice() > 4) {
                     event(new LotIsRare($lot));
                 }
+
+                if (in_array($lot->a, $lotIdsForCheck) && $lot->stickersPrice() > 4)
             }
             $offset += $this->batchSize;
 

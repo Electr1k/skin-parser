@@ -30,7 +30,7 @@ return new class extends Migration
                 ->index()
                 ->comment('Идентификатор (индекс из списка брелков CS2)');
 
-            $table->string('icon')
+            $table->string('icon', 512)
                 ->comment('Иконка брелка');
 
             $table->string('rarity_id')

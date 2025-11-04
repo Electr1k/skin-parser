@@ -72,4 +72,10 @@ class Lot extends Model
             ->whereIn('stickers.id', array_column($this->stickers ?? [], 'stickerId'))
             ->rawValue('SUM(coalesce(last_24h, last_7d, last_30d, last_90d, last_ever, 0))') ?? 0;
     }
+
+    public function keychainsPrice(): float
+    {
+        return Keychain::query();
+//            ->join('prices', 'prices.name', '=', 'keychains.name')
+    }
 }

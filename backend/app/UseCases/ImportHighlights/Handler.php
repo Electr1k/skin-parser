@@ -3,11 +3,11 @@
 namespace App\UseCases\ImportHighlights;
 
 use App\Models\Highlight;
-use App\Services\CSGOApiHTTPClient;
+use App\Services\CSData\MykelApiHTTPClient;
 
 readonly class Handler
 {
-    public function __construct(private CSGOApiHTTPClient $apiHTTPClient){}
+    public function __construct(private MykelApiHTTPClient $apiHTTPClient){}
 
 
     public function handle(): void

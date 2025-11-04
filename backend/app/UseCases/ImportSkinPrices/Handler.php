@@ -3,11 +3,11 @@
 namespace App\UseCases\ImportSkinPrices;
 
 use App\Models\Price;
-use App\Services\CSGOApiHTTPClient;
+use App\Services\CSData\Interfaces\HasPrices;
 
 readonly class Handler
 {
-    public function __construct(private CSGOApiHTTPClient $apiHTTPClient){}
+    public function __construct(private HasPrices $apiHTTPClient){}
 
     public function handle(): void
     {

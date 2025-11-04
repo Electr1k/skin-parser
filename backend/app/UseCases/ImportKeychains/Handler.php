@@ -5,11 +5,11 @@ namespace App\UseCases\ImportKeychains;
 use App\Models\Highlight;
 use App\Models\Keychain;
 use App\Models\Rarity;
-use App\Services\CSGOApiHTTPClient;
+use App\Services\CSData\MykelApiHTTPClient;
 
 readonly class Handler
 {
-    public function __construct(private CSGOApiHTTPClient $apiHTTPClient){}
+    public function __construct(private MykelApiHTTPClient $apiHTTPClient){}
 
 
     public function handle(): void

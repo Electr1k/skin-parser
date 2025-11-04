@@ -4,11 +4,11 @@ namespace App\UseCases\ImportStickers;
 
 use App\Models\Rarity;
 use App\Models\Sticker;
-use App\Services\CSGOApiHTTPClient;
+use App\Services\CSData\MykelApiHTTPClient;
 
 readonly class Handler
 {
-    public function __construct(private CSGOApiHTTPClient $apiHTTPClient){}
+    public function __construct(private MykelApiHTTPClient $apiHTTPClient){}
 
 
     public function handle(): void

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\CSData;
 
+use App\Services\CSData\Interfaces\HasPrices;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
@@ -13,7 +14,7 @@ use RuntimeException;
 /**
  * Для интеграции с https://github.com/ByMykel/CSGO-API/
  */
-class CSGOApiHTTPClient
+class MykelApiHTTPClient implements HasPrices
 {
 
     protected string $host;
@@ -38,9 +39,9 @@ class CSGOApiHTTPClient
     public function __construct()
     {
         /** @var string $host */
-        $host = config('csgo_api.client.host');
+        $host = config('mykel_api.client.host');
         if (! $host) {
-            throw new RuntimeException('Empty config [csgo_api.client.timeout]');
+            throw new RuntimeException('Empty config [mykel_api.client.timeout]');
         }
         $this->host = $host;
     }
