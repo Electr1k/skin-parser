@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\LotIsRare;
+use App\Models\Keychain;
 use App\Models\Lot;
 use App\Models\Sticker;
 use App\Services\NotificationSenders\NotificationSenderInterface;
@@ -31,13 +32,17 @@ readonly class SendLotIsRareTelegramNotification // implements ShouldQueue
             "Float: <b>%s</b>\n\n".
             "Цена стикеров: $<b>%s</b>\n".
             "Стикеры: \n%s\n\n".
+            "Цена брелков: $<b>%s</b>\n".
+            "Брелки: \n%s\n\n".
             "Цена: %s\n".
             "Дефолтная цена: %s\n".
             "URL: <a href='%s'>Страница: %s</a>",
             $lot->skinSettings->name,
             $lot->float,
             $lot->stickersPrice(),
-            $lot->stickerModels()->sortBy('slot')->map(fn(Sticker $sticker) => "$sticker->name ($" . $sticker->price?->last_24h . ")")->implode("\n"),
+            $lot->stickerModels()->sortBy('slot')->map(static fn(Sticker $sticker) => "$sticker->name ($" . $sticker->price?->last_24h . ")")->implode("\n"),
+            $lot->keychainsPrice(),
+            $lot->keychainsModels()->map(static fn(Keychain $keychain) => "$keychain->name ($" . $keychain->price?->last_24h . ")")->implode("\n"),
             $lot->price_dirty,
             "$$defaultPrice = " . $defaultPrice*80 . " руб.",
             $link,

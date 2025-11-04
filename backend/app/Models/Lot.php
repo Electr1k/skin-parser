@@ -73,9 +73,20 @@ class Lot extends Model
             ->rawValue('SUM(coalesce(last_24h, last_7d, last_30d, last_90d, last_ever, 0))') ?? 0;
     }
 
+    /** @return Collection<Sticker> */
+    public function keychainsModels(): Collection
+    {
+        return Keychain::query()
+            ->with('price')
+            ->whereIn('keychains.id', array_column($this->keychains ?? [], 'sticker_id'))
+            ->get();
+    }
+
     public function keychainsPrice(): float
     {
-        return Keychain::query();
-//            ->join('prices', 'prices.name', '=', 'keychains.name')
+        return Keychain::query()
+            ->join('prices', 'prices.name', '=', 'keychains.name')
+            ->whereIn('keychains.id', array_column($this->keychains ?? [], 'sticker_id'))
+            ->rawValue('SUM(coalesce(last_24h, last_7d, last_30d, last_90d, last_ever, 0))') ?? 0;
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * Брелок
@@ -13,10 +14,17 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $rarity_id - Идентификатор редкости
  * @property bool $is_highlight - Брелок - хайлайт
  * @property int|null $highlight_id - Идентификатор хайлайта
+ *
+ * @property Price|null $price
  */
 class Keychain extends Model
 {
     public $incrementing = false;
 
     protected $guarded = false;
+
+    public function price(): HasOne
+    {
+        return $this->hasOne(Price::class, 'name', 'name');
+    }
 }

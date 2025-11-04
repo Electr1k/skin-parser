@@ -67,7 +67,7 @@ class Handler
                     ])
                 );
 
-                if (in_array($lot->a, $lotIdsForCheck) && $lot->float && (
+                if ($data->skin->float_limit && in_array($lot->a, $lotIdsForCheck) && $lot->float && (
                     $data->skin->extremum === Extremum::MIN && $lot->float < $data->skin->float_limit ||
                     $data->skin->extremum === Extremum::MAX && $lot->float > $data->skin->float_limit)
                 ) {
@@ -75,11 +75,15 @@ class Handler
                 }
 
                 // TODO: подумать если стикеры изменятся
-                if (in_array($lot->a, $lotIdsForCheck) && $lot->stickersPrice() > 4) {
+                if ($data->skin->min_stickers_price && in_array($lot->a, $lotIdsForCheck)
+                    && $lot->stickersPrice() > $data->skin->min_stickers_price) {
                     event(new LotIsRare($lot));
                 }
 
-                if (in_array($lot->a, $lotIdsForCheck) && $lot->stickersPrice() > 4)
+                if ($data->skin->min_keychains_price && in_array($lot->a, $lotIdsForCheck)
+                    && $lot->keychainsPrice() > $data->skin->min_keychains_price) {
+                    event(new LotIsRare($lot));
+                }
             }
             $offset += $this->batchSize;
 
