@@ -12,5 +12,5 @@ interface LotInterface
 
     public function getPaginate(PaginateDTO $dto): LotPagination;
 
-    public function getLotsWithStickers(iterable $lotIds): Collection;
+    public function getLotsWithStickersAndKeychains(iterable $lotIds): Collection;
 }

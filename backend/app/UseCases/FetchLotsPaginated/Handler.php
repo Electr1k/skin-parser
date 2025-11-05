@@ -16,7 +16,7 @@ readonly class Handler
     {
         $pagination = $this->lotRepository->getPaginate(PaginateDTO::from($dataInput));
 
-        $additionalStickersData = $this->lotRepository->getLotsWithStickers($pagination->pluck('a'));
+        $additionalStickersData = $this->lotRepository->getLotsWithStickersAndKeychains($pagination->pluck('a'));
 
         $pagination->map(function (Lot $lot) use ($additionalStickersData) {
             $stickers = $additionalStickersData->firstWhere('a', $lot->a);

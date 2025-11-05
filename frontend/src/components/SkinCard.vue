@@ -46,7 +46,11 @@
       <div class="keychain-section">
         <div class="keychain-slot" :class="{ 'keychain-slot--empty': !hasKeychain }">
           <div v-if="hasKeychain" class="keychain-item">
-            <div class="keychain-image-wrapper" :title="keychain.name">
+            <div
+                class="keychain-image-wrapper"
+                :title="keychain.name"
+                @click.stop="openKeychainLink"
+            >
               <img
                   :src="keychain.icon"
                   :alt="keychain.name"
@@ -82,7 +86,11 @@
               :class="{ 'sticker-slot--empty': !getStickerBySlot(index - 1) }"
           >
             <div v-if="getStickerBySlot(index - 1)" class="sticker-item">
-              <div class="sticker-image-wrapper" :title="getStickerBySlot(index - 1).name">
+              <div
+                  class="sticker-image-wrapper"
+                  :title="getStickerBySlot(index - 1).name"
+                  @click.stop="openStickerLink(getStickerBySlot(index - 1))"
+              >
                 <img
                     :src="getStickerBySlot(index - 1).icon"
                     :alt="getStickerBySlot(index - 1).name"
@@ -171,6 +179,18 @@ export default {
 
     getStickerBySlot(slot) {
       return this.sortedStickers.find(sticker => sticker.slot === slot) || null
+    },
+
+    openStickerLink(sticker) {
+      if (sticker && sticker.link) {
+        window.open(sticker.link, '_blank', 'noopener,noreferrer')
+      }
+    },
+
+    openKeychainLink() {
+      if (this.keychain && this.keychain.link) {
+        window.open(this.keychain.link, '_blank', 'noopener,noreferrer')
+      }
     }
   }
 }
@@ -359,7 +379,7 @@ export default {
   transition: transform 0.2s ease;
   flex-shrink: 0;
   position: relative;
-  cursor: help;
+  cursor: pointer;
 }
 
 .keychain-image-wrapper:hover::after {
@@ -475,7 +495,7 @@ export default {
   transition: transform 0.2s ease;
   flex-shrink: 0;
   position: relative;
-  cursor: help;
+  cursor: pointer;
 }
 
 .sticker-image-wrapper:hover::after {

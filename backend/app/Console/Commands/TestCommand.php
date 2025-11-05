@@ -35,7 +35,7 @@ class TestCommand extends Command
         $lot = app(LotRepository::class);
 
 
-        $lot->getLotsWithStickers([
+        $lot->getLotsWithStickersAndKeychains([
             '47535703705',
             '43462794005'
         ]);

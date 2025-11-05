@@ -20,6 +20,7 @@ class KeychainOnSkinResource extends JsonResource
             'icon' => $this['icon'] ?? null,
             'price' => round($this['price'] ?? 0., 2),
             'pattern' => $this['pattern'] ?? null,
+            'link' => 'https://steamcommunity.com/market/listings/730/'.rawurlencode($this['name']),
         ];
     }
 }

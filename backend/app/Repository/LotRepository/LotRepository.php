@@ -58,7 +58,7 @@ class LotRepository implements LotInterface
         );
     }
 
-    public function getLotsWithStickers(iterable $lotIds): Collection
+    public function getLotsWithStickersAndKeychains(iterable $lotIds): Collection
     {
         return Lot::query()
             ->select(

@@ -41,7 +41,7 @@
           <!-- Брелок -->
           <div class="keychain-section" v-if="hasKeychain">
             <h3 class="section-title">Брелок</h3>
-            <div class="keychain-item-large">
+            <div class="keychain-item-large" @click="openKeychainLink">
               <img
                   :src="keychain.icon"
                   :alt="keychain.name"
@@ -68,7 +68,7 @@
                   class="sticker-slot"
                   :class="{ 'sticker-slot--empty': !getStickerBySlot(index - 1) }"
               >
-                <div v-if="getStickerBySlot(index - 1)" class="sticker-item-compact">
+                <div v-if="getStickerBySlot(index - 1)" class="sticker-item-compact" @click="openStickerLink(getStickerBySlot(index - 1))">
                   <img
                       :src="getStickerBySlot(index - 1).icon"
                       :alt="getStickerBySlot(index - 1).name"
@@ -178,13 +178,25 @@ export default {
 
     openSteamLink() {
       if (this.skin.steam_link) {
-        window.open(this.skin.steam_link, '_blank')
+        window.open(this.skin.steam_link, '_blank', 'noopener,noreferrer')
       }
     },
 
     openInspectLink() {
       if (this.skin.inspect_link) {
-        window.open(this.skin.inspect_link, '_blank')
+        window.open(this.skin.inspect_link, '_blank', 'noopener,noreferrer')
+      }
+    },
+
+    openStickerLink(sticker) {
+      if (sticker && sticker.link) {
+        window.open(sticker.link, '_blank', 'noopener,noreferrer')
+      }
+    },
+
+    openKeychainLink() {
+      if (this.keychain && this.keychain.link) {
+        window.open(this.keychain.link, '_blank', 'noopener,noreferrer')
       }
     }
   }
@@ -344,6 +356,16 @@ export default {
   display: flex;
   align-items: center;
   gap: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.keychain-item-large:hover {
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
 }
 
 .keychain-image-large {
@@ -355,6 +377,11 @@ export default {
   border: 1px solid #e1e5e9;
   padding: 6px;
   flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.keychain-item-large:hover .keychain-image-large {
+  transform: scale(1.05);
 }
 
 .keychain-info-large {
@@ -417,6 +444,16 @@ export default {
   flex-direction: column;
   align-items: center;
   gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.sticker-item-compact:hover {
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
 }
 
 .sticker-image-compact {
@@ -427,6 +464,11 @@ export default {
   background: #ffffff;
   border: 1px solid #e1e5e9;
   padding: 3px;
+  transition: transform 0.2s ease;
+}
+
+.sticker-item-compact:hover .sticker-image-compact {
+  transform: scale(1.05);
 }
 
 .sticker-info-compact {

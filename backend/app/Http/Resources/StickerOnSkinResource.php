@@ -19,6 +19,7 @@ class StickerOnSkinResource extends JsonResource
             'name' => $this['name'],
             'icon' => $this['icon'],
             'price' => round($this['price'], 2),
+            'link' => 'https://steamcommunity.com/market/listings/730/'.rawurlencode($this['name']),
         ];
     }
 }
