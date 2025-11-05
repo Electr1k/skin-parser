@@ -22,7 +22,7 @@ readonly class Handler
             $stickers = $additionalStickersData->firstWhere('a', $lot->a);
 
             $lot->stickers = $stickers?->stickers ?? $lot->stickers;
-            $lot->keychains = $stickers?->keychains ?? $lot->stickers;
+            $lot->keychains = $stickers?->keychains ?? $lot->keychains;
             $lot->stickers_price = (float) $stickers?->stickers_price ?? 0;
             $lot->keychains_price = (float) $stickers?->keychains_price ?? 0;
         } );
