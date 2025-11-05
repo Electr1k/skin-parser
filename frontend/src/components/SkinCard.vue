@@ -40,41 +40,74 @@
       </div>
     </div>
 
-    <!-- Стикеры -->
-    <div class="stickers-section">
-      <div class="stickers-list">
-        <div
-            v-for="index in 5"
-            :key="index"
-            class="sticker-slot"
-            :class="{ 'sticker-slot--empty': !getStickerBySlot(index - 1) }"
-        >
-          <div v-if="getStickerBySlot(index - 1)" class="sticker-item">
-            <div class="sticker-image-wrapper" :title="getStickerBySlot(index - 1).name">
+    <!-- Брелок и стикеры -->
+    <div class="decoration-section">
+      <!-- Брелок -->
+      <div class="keychain-section">
+        <div class="keychain-slot" :class="{ 'keychain-slot--empty': !hasKeychain }">
+          <div v-if="hasKeychain" class="keychain-item">
+            <div class="keychain-image-wrapper" :title="keychain.name">
               <img
-                  :src="getStickerBySlot(index - 1).icon"
-                  :alt="getStickerBySlot(index - 1).name"
-                  class="sticker-image"
+                  :src="keychain.icon"
+                  :alt="keychain.name"
+                  class="keychain-image"
               />
             </div>
-            <div class="sticker-info">
-              <div class="sticker-price">{{ formatPriceUSD(getStickerBySlot(index - 1).price) }}</div>
-              <div v-if="getStickerBySlot(index - 1).wear > 0" class="sticker-wear">
-                {{ formatWear(getStickerBySlot(index - 1).wear) }}
+            <div class="keychain-info">
+              <div class="keychain-price">{{ formatPriceUSD(keychain.price) }}</div>
+              <div v-if="keychain.wear > 0" class="keychain-wear">
+                {{ formatWear(keychain.wear) }}
               </div>
             </div>
           </div>
           <div v-else class="empty-slot">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
               <path d="M10 3a7 7 0 100 14 7 7 0 000-14zM5 10a5 5 0 1110 0A5 5 0 015 10z" fill="none" stroke="currentColor" stroke-width="1.5"/>
               <path d="M7 10h6M10 7v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
             </svg>
           </div>
         </div>
       </div>
-      <!-- Общая цена стикеров -->
-      <div v-if="skin.stickers_price > 0" class="stickers-total">
-        Стикеры: {{ formatPriceUSD(skin.stickers_price) }}
+
+      <!-- Разделитель -->
+      <div class="section-divider"></div>
+
+      <!-- Стикеры -->
+      <div class="stickers-section">
+        <div class="stickers-list">
+          <div
+              v-for="index in 5"
+              :key="index"
+              class="sticker-slot"
+              :class="{ 'sticker-slot--empty': !getStickerBySlot(index - 1) }"
+          >
+            <div v-if="getStickerBySlot(index - 1)" class="sticker-item">
+              <div class="sticker-image-wrapper" :title="getStickerBySlot(index - 1).name">
+                <img
+                    :src="getStickerBySlot(index - 1).icon"
+                    :alt="getStickerBySlot(index - 1).name"
+                    class="sticker-image"
+                />
+              </div>
+              <div class="sticker-info">
+                <div class="sticker-price">{{ formatPriceUSD(getStickerBySlot(index - 1).price) }}</div>
+                <div v-if="getStickerBySlot(index - 1).wear > 0" class="sticker-wear">
+                  {{ formatWear(getStickerBySlot(index - 1).wear) }}
+                </div>
+              </div>
+            </div>
+            <div v-else class="empty-slot">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10 3a7 7 0 100 14 7 7 0 000-14zM5 10a5 5 0 1110 0A5 5 0 015 10z" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M7 10h6M10 7v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <!-- Общая цена стикеров -->
+        <div v-if="skin.stickers_price > 0" class="stickers-total">
+          Стикеры: {{ formatPriceUSD(skin.stickers_price) }}
+        </div>
       </div>
     </div>
   </div>
@@ -94,6 +127,13 @@ export default {
       if (!this.skin.stickers) return []
       // Сортируем стикеры по slot
       return [...this.skin.stickers].sort((a, b) => (a.slot || 0) - (b.slot || 0))
+    },
+    keychain() {
+      // Берем первый брелок (предполагаем, что он один)
+      return this.skin.keychains && this.skin.keychains.length > 0 ? this.skin.keychains[0] : null
+    },
+    hasKeychain() {
+      return this.keychain !== null
     }
   },
   methods: {
@@ -212,7 +252,7 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  max-width: calc(100% - 400px); /* Ограничиваем ширину чтобы осталось место для стикеров */
+  max-width: calc(100% - 400px);
 }
 
 .skin-name {
@@ -268,17 +308,134 @@ export default {
   min-width: 140px;
 }
 
-/* Секция стикеров */
-.stickers-section {
+/* Общая секция декораций (брелок + стикеры) */
+.decoration-section {
   position: absolute;
-  left: calc(50% + 120px); /* Сдвигаем от центра вправо */
+  right: 20px;
   top: 50%;
   transform: translateY(-50%);
   z-index: 2;
   display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+/* Секция брелка */
+.keychain-section {
+  display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px; /* Увеличили отступ между стикерами и общей ценой */
+  gap: 8px;
+}
+
+.keychain-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  height: 68px;
+}
+
+.keychain-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+  justify-content: flex-start;
+}
+
+.keychain-image-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+  position: relative;
+  cursor: help;
+}
+
+.keychain-image-wrapper:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  z-index: 10;
+}
+
+.keychain-item:hover .keychain-image-wrapper {
+  transform: scale(1.05);
+}
+
+.keychain-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.keychain-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.keychain-price {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #9c27b0;
+  background: #f3e5f5;
+  padding: 2px 6px;
+  border-radius: 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.keychain-wear {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #e53e3e;
+  background: #fed7d7;
+  padding: 1px 4px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.section-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #718096;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Разделитель */
+.section-divider {
+  width: 1px;
+  height: 60px;
+  background: linear-gradient(to bottom, transparent 0%, #e2e8f0 50%, transparent 100%);
+}
+
+/* Секция стикеров */
+.stickers-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
 }
 
 .stickers-list {
@@ -318,7 +475,7 @@ export default {
   transition: transform 0.2s ease;
   flex-shrink: 0;
   position: relative;
-  cursor: help; /* Изменяем курсор при наведении */
+  cursor: help;
 }
 
 .sticker-image-wrapper:hover::after {
@@ -383,7 +540,7 @@ export default {
   padding: 4px 8px;
   border-radius: 6px;
   white-space: nowrap;
-  margin-top: 8px; /* Добавили отступ сверху */
+  margin-top: 8px;
 }
 
 /* Пустые слоты */
@@ -410,11 +567,12 @@ export default {
   }
 
   .skin-info {
-    max-width: calc(100% - 320px);
+    max-width: calc(100% - 350px);
   }
 
-  .stickers-section {
-    left: calc(50% + 80px);
+  .decoration-section {
+    right: 16px;
+    gap: 20px;
   }
 
   .stickers-list {
@@ -465,21 +623,27 @@ export default {
     min-width: 100px;
   }
 
-  .stickers-section {
+  .decoration-section {
     position: static;
     transform: none;
     order: 2;
     width: 100%;
     margin-top: 12px;
-    left: auto;
-    flex-direction: row;
     justify-content: space-between;
-    align-items: center;
-    gap: 12px;
+    gap: 16px;
+  }
+
+  .section-divider {
+    height: 50px;
+  }
+
+  .stickers-section {
+    flex: 1;
+    align-items: flex-end;
   }
 
   .stickers-list {
-    justify-content: flex-start;
+    justify-content: flex-end;
     flex-wrap: wrap;
     gap: 12px;
   }
@@ -490,7 +654,6 @@ export default {
 
   .stickers-total {
     margin-top: 0;
-    margin-left: auto;
   }
 }
 
@@ -516,12 +679,24 @@ export default {
     font-size: 0.8rem;
   }
 
-  .stickers-section {
+  .decoration-section {
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
+  }
+
+  .section-divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent 0%, #e2e8f0 50%, transparent 100%);
+  }
+
+  .stickers-section {
+    width: 100%;
+    align-items: center;
   }
 
   .stickers-list {
+    justify-content: center;
     gap: 8px;
   }
 
@@ -542,7 +717,6 @@ export default {
   .stickers-total {
     font-size: 0.7rem;
     margin-top: 4px;
-    margin-left: 0;
   }
 }
 </style>
