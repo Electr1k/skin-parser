@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\SkinSettings;
+use App\Repository\LotRepository\LotRepository;
 use App\UseCases\CheckLots\DataInput;
 use App\UseCases\CheckLots\Handler;
 use Illuminate\Console\Command;
@@ -30,8 +31,14 @@ class TestCommand extends Command
     public function handle(Handler $handler): int
     {
 
-        $s = SkinSettings::query()->first();
-        $handler->handle(new DataInput($s));
+        /** @var LotRepository $lot */
+        $lot = app(LotRepository::class);
+
+
+        $lot->getLotsWithStickers([
+            '47535703705',
+            '43462794005'
+        ]);
 
         return self::SUCCESS;
     }

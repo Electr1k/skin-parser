@@ -32,7 +32,7 @@ return new class extends Migration
                 ->nullable()
                 ->comment('Максимальное значение float');
 
-            $table->string('icon')
+            $table->string('icon', 512)
                 ->comment('Иконка скина');
 
             $table->timestamps();

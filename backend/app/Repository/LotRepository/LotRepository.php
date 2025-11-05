@@ -60,40 +60,69 @@ class LotRepository implements LotInterface
 
     public function getLotsWithStickers(iterable $lotIds): Collection
     {
-        $subQuery = Lot::query()
-            ->select([
+        return Lot::query()
+            ->select(
                 'lots.a',
-                DB::raw("ROW_NUMBER() OVER (PARTITION BY lots.a ORDER BY s.name) - 1 as slot"),
-                DB::raw("(item->>'stickerId')::int as sticker_id"),
-                's.name',
-                's.icon',
-                DB::raw("CASE WHEN item->'wear' IS NULL THEN '0' ELSE item->>'wear' END as wear"),
-                DB::raw("ROUND(COALESCE(p.last_24h, p.last_7d, p.last_30d, p.last_90d, p.last_ever)::numeric, 2)::float as price")
-            ])
-            ->crossJoin(DB::raw('LATERAL jsonb_array_elements(lots.stickers) AS item'))
-            ->leftJoin('stickers as s', DB::raw("(item->>'stickerId')::int"), '=', 's.id')
-            ->leftJoin('prices as p', 's.name', '=', 'p.name')
-            ->whereIn('lots.a', $lotIds);
-
-        return DB::table(DB::raw("({$subQuery->toSql()}) as sub"))
-            ->mergeBindings($subQuery->getQuery())
-            ->select([
-                'a',
-                DB::raw(
-                "json_agg(
-                    json_build_object(
-                        'slot', slot,
-                        'stickerId', sticker_id,
-                        'name', name,
-                        'icon', icon,
-                        'wear', wear,
-                        'price', price
+                DB::raw("(
+                    SELECT JSON_AGG(
+                        JSON_BUILD_OBJECT(
+                            'slot', se->>'slot',
+                            'sticker_id', se->>'stickerId',
+                            'wear', se->>'wear',
+                            'icon', s.icon,
+                            'name', s.name,
+                            'price', COALESCE(sp.last_24h, sp.last_7d, sp.last_30d, sp.last_90d, sp.last_ever, 0)
+                        )
                     )
-                ) as stickers"),
-                DB::raw("ROUND(SUM(CASE WHEN wear = '0' THEN price ELSE 0 END)::numeric, 2) as stickers_price")
-            ])
-            ->groupBy('a')
+                    FROM JSON_ARRAY_ELEMENTS(lots.stickers::JSON) se
+                    LEFT JOIN stickers s ON s.id = (se->>'stickerId')::INTEGER
+                    LEFT JOIN prices sp ON sp.name = s.name
+                    WHERE se->>'stickerId' IS NOT NULL
+                ) AS stickers"),
+                DB::raw("(
+                    SELECT SUM(COALESCE(sp.last_24h, sp.last_7d, sp.last_30d, sp.last_90d, sp.last_ever, 0))
+                    FROM JSON_ARRAY_ELEMENTS(lots.stickers::JSON) se
+                    LEFT JOIN stickers s ON s.id = (se->>'stickerId')::INTEGER
+                    LEFT JOIN prices sp ON sp.name = s.name
+                    WHERE se->>'stickerId' IS NOT NULL
+                ) AS stickers_price"),
+                DB::raw("(
+                    SELECT JSON_AGG(
+                        JSON_BUILD_OBJECT(
+                            'slot', ke->>'slot',
+                            'pattern', ke->>'pattern',
+                            'sticker_id', ke->>'sticker_id',
+                            'icon', k.icon,
+                            'name', k.name,
+                            'price', COALESCE(kp.last_24h, kp.last_7d, kp.last_30d, kp.last_90d, kp.last_ever, 0)
+                        )
+                    )
+                    FROM JSON_ARRAY_ELEMENTS(lots.keychains::JSON) ke
+                    LEFT JOIN keychains k ON k.id = (ke->>'sticker_id')::INTEGER
+                    LEFT JOIN prices kp ON kp.name = k.name
+                    WHERE ke->>'sticker_id' IS NOT NULL
+                ) AS keychains"),
+                DB::raw("(
+                    SELECT SUM(COALESCE(kp.last_24h, kp.last_7d, kp.last_30d, kp.last_90d, kp.last_ever, 0))
+                    FROM JSON_ARRAY_ELEMENTS(lots.keychains::JSON) ke
+                    LEFT JOIN keychains k ON k.id = (ke->>'sticker_id')::INTEGER
+                    LEFT JOIN prices kp ON kp.name = k.name
+                    WHERE ke->>'sticker_id' IS NOT NULL
+                ) AS keychains_price")
+            )
+            ->whereIn('lots.a', $lotIds)
+            ->toBase()
             ->get()
-            ->map(function ($lot){ $lot->stickers = json_decode($lot->stickers); return $lot;});
+            ->map(static function (object $lot) {
+                $lot->stickers = json_decode($lot->stickers, true);
+                $lot->keychains = json_decode($lot->keychains, true);
+
+                if (is_array($lot->stickers)){
+                    foreach ($lot->stickers as $index => &$sticker){
+                        $sticker['slot'] = $index;
+                    }
+                }
+                return $lot;
+            });
     }
 }

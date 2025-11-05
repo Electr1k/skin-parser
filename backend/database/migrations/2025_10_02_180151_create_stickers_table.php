@@ -22,7 +22,7 @@ return new class extends Migration
 
             $table->string('original_name')->comment('Оригинальное название из файлов CS2');
 
-            $table->string('icon')->comment('Иконка стикера');
+            $table->string('icon', 512)->comment('Иконка стикера');
 
             $table->string('rarity_id')->index()->comment('Идентификатор редкости');
 
