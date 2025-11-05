@@ -19,7 +19,7 @@ class KeychainOnSkinResource extends JsonResource
             'name' => $this['name'] ?? null,
             'icon' => $this['icon'] ?? null,
             'price' => round($this['price'] ?? 0., 2),
-            'pattern' => $this['pattern'],
+            'pattern' => $this['pattern'] ?? null,
         ];
     }
 }
